@@ -178,7 +178,6 @@ public class Parser {
             joinedTableNames.append(currTableName);
             tableToStartColMap.put(currTableName, numCols);
             numCols += database.getRelationByName(currTableName).getNumOfColsToKeep();
-            System.gc();
         }
 
         StringBuilder result = new StringBuilder();

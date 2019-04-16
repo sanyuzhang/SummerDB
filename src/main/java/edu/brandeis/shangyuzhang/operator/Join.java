@@ -107,7 +107,6 @@ public class Join implements Iterator<int[]> {
             pointer = 0;
             if (isDiskEnd) break;
             resetRightIterator();
-            // System.gc();
         }
     }
 
@@ -162,7 +161,6 @@ public class Join implements Iterator<int[]> {
             pointer = 0;
             if (isDiskEnd) break;
             resetRightIterator();
-            System.gc();
         }
     }
 
