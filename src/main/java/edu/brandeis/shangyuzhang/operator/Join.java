@@ -16,7 +16,7 @@ public class Join implements Iterator<int[]> {
     private String filename;
     private int rowsRemaining;
     private int numRows;
-    private int numCols;
+    private int numCols = 0;
 
     private int pointerInBytes;
     private static final int BYTE_SIZE = 1024 * 32;
@@ -25,8 +25,8 @@ public class Join implements Iterator<int[]> {
     private Iterator diskTable;
     private Iterator memTable;
 
-    private String rightTableName;
-    private FilterPredicate rightTableFilterPredicate;
+    private String firstTableName;
+    private FilterPredicate firstTableFilterPredicate;
 
     private List<ParseElem[]> naturalJoinPairs;
     private Map<String, Integer> tableToStartColMap;
@@ -54,7 +54,7 @@ public class Join implements Iterator<int[]> {
     }
 
     private void initializeJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate rightFp) throws IOException {
+                                String newTb, String firstTable, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
         filename = database.getRootPath() + newTb + SUFFIX;
 
         memTable = leftIterator;
@@ -62,8 +62,8 @@ public class Join implements Iterator<int[]> {
 
         tableToStartColMap = startColMap;
 
-        rightTableName = rightTb;
-        rightTableFilterPredicate = rightFp;
+        firstTableName = firstTable;
+        firstTableFilterPredicate = firstFilterPred;
 
         naturalJoinPairs = pairs;
         isCartesianJoin = pairs.isEmpty();
@@ -176,8 +176,6 @@ public class Join implements Iterator<int[]> {
         Map<Integer, Map<Integer, Set<Integer>>> bufferHash = new HashMap(); // k: col, v: map:{ k: colValue, v: list of row_numbers}
         int pointer = 0;
 
-        int loopTime = 0;
-
         while (true) {
             boolean isDiskEnd = true;
             while (diskTable.hasNext()) {
@@ -232,10 +230,11 @@ public class Join implements Iterator<int[]> {
 
     private void mergeRow(int[] memRow, int[] diskRow) {
         try {
-            numCols = memRow.length + diskRow.length;
+            if (numCols == 0)
+                numCols = memRow.length + diskRow.length;
             for (int i = 0; i < numCols; i++) {
                 if (i < memRow.length) dos.writeInt(memRow[i]);
-                else dos.writeInt(diskRow[i - memRow.length]); // TODO write one line every time or write lines
+                else dos.writeInt(diskRow[i - memRow.length]);
             }
             numRows++;
         } catch (IOException e) {
@@ -250,13 +249,13 @@ public class Join implements Iterator<int[]> {
     private void resetRightIterator() throws IOException {
         if (memTable instanceof Scan) {
             memTable = null;
-            memTable = new Scan(rightTableName);
+            memTable = new Scan(firstTableName);
         } else if (memTable instanceof Project) {
             memTable = null;
-            memTable = new Project(new Scan(rightTableName), database.getRelationByName(rightTableName).getColsToKeep());
+            memTable = new Project(new Scan(firstTableName), database.getRelationByName(firstTableName).getColsToKeep());
         } else if (memTable instanceof Filter) {
             memTable = null;
-            memTable = new Filter(new Project(new Scan(rightTableName), database.getRelationByName(rightTableName).getColsToKeep()), rightTableFilterPredicate);
+            memTable = new Filter(new Project(new Scan(firstTableName), database.getRelationByName(firstTableName).getColsToKeep()), firstTableFilterPredicate);
         } else if (memTable instanceof Join) {
             ((Join) memTable).initializeDataStream();
         }
