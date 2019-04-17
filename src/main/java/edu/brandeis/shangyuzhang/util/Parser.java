@@ -146,6 +146,7 @@ public class Parser {
         int numCols = 0;
         Map<String, Integer> tableToStartColMap = new HashMap();
         String firstTableName = joinOrder.substring(0, 1);
+        FilterPredicate firstFilterPred = optimizer.getFilterPredicateByTableName(firstTableName);
 
         for (int i = 0; i < joinOrder.length(); i++) {
             boolean isLastJoin = i == joinOrder.length() - 1;
@@ -169,10 +170,10 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableToStartColMap.put(currTableName, numCols);
-                    sums = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, filterPredicate, sumElems).getSums();
+                    sums = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred, sumElems).getSums();
                     break;
                 } else {
-                    currIterator = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, filterPredicate);
+                    currIterator = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred);
                 }
             }
             resultIterator = currIterator;

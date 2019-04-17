@@ -41,14 +41,14 @@ public class Join implements Iterator<int[]> {
     private Database database = Database.getInstance();
 
     public Join(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate rightFp) throws IOException {
-        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, rightFp);
+                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
+        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, firstFilterPred);
         toJoinTable();
     }
 
     public Join(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate rightFp, List<ParseElem> sumElms) throws IOException {
-        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, rightFp);
+                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred, List<ParseElem> sumElms) throws IOException {
+        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, firstFilterPred);
         initSumTools(sumElms);
         toJoinTable();
     }
