@@ -6,20 +6,23 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.*;
 import java.nio.CharBuffer;
 
+import static edu.brandeis.shangyuzhang.util.Constants.SUFFIX;
+
 public class Loader {
 
     private static Database database = Database.getInstance();
-
-    private static final String SUFFIX = ".dat";
 
     private String oldPath;
     private String newPath;
     private String tableName;
 
     public Loader(String p) {
+        String rootPath = FilenameUtils.getPath(p);
+        database.setRootPath(rootPath);
+
         oldPath = p;
         tableName = FilenameUtils.getBaseName(p);
-        newPath = FilenameUtils.getPath(p) + tableName + SUFFIX;
+        newPath = rootPath + tableName + SUFFIX;
     }
 
     private int getNumOfCols() throws IOException {

@@ -133,9 +133,9 @@ public class Parser {
 
     public void optimize() {
         optimizer.initBestMap();
-        joinOrder = optimizer.computeBest();
-//        System.out.println("================= JOIN ORDER =================");
-//        System.out.println(joinOrder);
+        joinOrder = optimizer.computeBest(true);
+        System.out.println("================= JOIN ORDER =================");
+        System.out.println(joinOrder);
     }
 
     public void startEngine() throws IOException {
@@ -148,6 +148,7 @@ public class Parser {
 
         for (int i = 0; i < joinOrder.length(); i++) {
             boolean isLastJoin = i == joinOrder.length() - 1;
+            String newTableName = joinOrder.substring(0, i + 1);
             String currTableName = String.valueOf(joinOrder.charAt(i));
 
             Iterator currIterator = new Scan(currTableName);
@@ -167,10 +168,10 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableToStartColMap.put(currTableName, numCols);
-                    sums = new Join(resultIterator, currIterator, tableToStartColMap, currTableName, pairs, filterPredicate, sumElems).getSums();
+                    sums = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, currTableName, pairs, filterPredicate, sumElems).getSums();
                     break;
                 } else {
-                    currIterator = new Join(resultIterator, currIterator, tableToStartColMap, currTableName, pairs, filterPredicate);
+                    currIterator = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, currTableName, pairs, filterPredicate);
                 }
             }
             resultIterator = currIterator;

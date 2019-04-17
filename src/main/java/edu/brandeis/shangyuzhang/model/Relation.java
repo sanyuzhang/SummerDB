@@ -13,17 +13,19 @@ public class Relation implements Estimator {
     private int[] minCols;
     private int[] maxCols;
     private int[] sizeOfCols;
-    private Set<Integer>[] uniqueNumCols;
 
     private int[] colsToKeep;
     private Set<Integer> colsToKeepSet;
     private Map<Integer, Integer> oldNewColsMapping;
+
+    private double estimatedCardinality;
 
     public Relation(String path, String tn, int c, int r) {
         filePath = path;
         tableName = tn;
         numCols = c;
         numRows = r;
+        estimatedCardinality = r;
 
         minCols = new int[numCols];
         Arrays.fill(minCols, Integer.MAX_VALUE);
@@ -32,8 +34,6 @@ public class Relation implements Estimator {
         Arrays.fill(maxCols, Integer.MIN_VALUE);
 
         sizeOfCols = new int[numCols];
-        uniqueNumCols = new HashSet[numCols];
-        for (int i = 0; i < numCols; i++) uniqueNumCols[i] = new HashSet();
 
         colsToKeepSet = new HashSet();
     }
@@ -65,19 +65,20 @@ public class Relation implements Estimator {
     public void addColValToSet(int index, int value) {
         minCols[index] = Math.min(minCols[index], value);
         maxCols[index] = Math.max(maxCols[index], value);
-        uniqueNumCols[index].add(value);
     }
 
     public void createSizeOfCols() {
         for (int i = 0; i < numCols; i++) {
-            sizeOfCols[i] = uniqueNumCols[i].size();
+            sizeOfCols[i] = numRows;
         }
-        clearUniqueNumsColsSet();
     }
 
-    private void clearUniqueNumsColsSet() {
-        uniqueNumCols = null;
-//        System.gc();
+    public void setEstimatedCardinality(double estimatedCardinality) {
+        this.estimatedCardinality = estimatedCardinality;
+    }
+
+    public double getEstimatedCardinality() {
+        return estimatedCardinality;
     }
 
     public int getNumCols() {
@@ -140,7 +141,7 @@ public class Relation implements Estimator {
     @Override
     public double getCardinalLesserThan(int oldCol, int value) {
         if (value > minCols[oldCol]) {
-            return 1.0 * (value - minCols[oldCol]) / (maxCols[oldCol] - minCols[oldCol]);
+            return 1.0 * (value - minCols[oldCol]) / (maxCols[oldCol] - minCols[oldCol]) * numRows;
         }
         return 0;
     }
@@ -148,7 +149,7 @@ public class Relation implements Estimator {
     @Override
     public double getCardinalGreaterThan(int oldCol, int value) {
         if (value < maxCols[oldCol]) {
-            return 1.0 * (maxCols[oldCol] - value) / (maxCols[oldCol] - minCols[oldCol]);
+            return 1.0 * (maxCols[oldCol] - value) / (maxCols[oldCol] - minCols[oldCol]) * numRows;
         }
         return 0;
     }

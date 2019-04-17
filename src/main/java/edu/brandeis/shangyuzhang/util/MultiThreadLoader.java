@@ -6,11 +6,11 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.*;
 import java.nio.CharBuffer;
 
+import static edu.brandeis.shangyuzhang.util.Constants.SUFFIX;
+
 public class MultiThreadLoader implements Runnable {
 
     private static Database database = Database.getInstance();
-
-    private static final String SUFFIX = ".dat";
 
     private String oldPath;
     private String newPath;

@@ -1,15 +1,26 @@
 package edu.brandeis.shangyuzhang.operator;
 
 import edu.brandeis.shangyuzhang.model.*;
+import edu.brandeis.shangyuzhang.util.Catalog;
 import edu.brandeis.shangyuzhang.util.Database;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+
+import static edu.brandeis.shangyuzhang.util.Constants.SUFFIX;
 
 public class Join implements Iterator<int[]> {
 
-    private int currRow;
-    private List<int[]> rows;
+    private DataOutputStream dos;
+    private DataInputStream dis;
+    private String filename;
+    private int rowsRemaining;
+    private int numRows;
+    private int numCols;
+
+    private int pointerInBytes;
+    private static final int BYTE_SIZE = 1024 * 32;
+    private byte[] bytes;
 
     private Iterator diskTable;
     private Iterator memTable;
@@ -26,32 +37,25 @@ public class Join implements Iterator<int[]> {
     private long[] sums;
     private int[] sumCols;
 
-    private static final int BUFFER_SIZE = 1024 * 8;
+    private static final int BUFFER_SIZE = 1024 * 32;
     private Database database = Database.getInstance();
 
     public Join(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                String rightTb, List<ParseElem[]> pairs, FilterPredicate rightFp) throws IOException {
-        currRow = 0;
-
-        memTable = leftIterator;
-        diskTable = rightIterator;
-
-        tableToStartColMap = startColMap;
-
-        rightTableName = rightTb;
-        rightTableFilterPredicate = rightFp;
-
-        naturalJoinPairs = pairs;
-        isCartesianJoin = pairs.isEmpty();
-
-
-        rows = new ArrayList();
+                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate rightFp) throws IOException {
+        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, rightFp);
         toJoinTable();
     }
 
     public Join(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                String rightTb, List<ParseElem[]> pairs, FilterPredicate rightFp, List<ParseElem> sumElms) throws IOException {
-        currRow = 0;
+                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate rightFp, List<ParseElem> sumElms) throws IOException {
+        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, rightFp);
+        initSumTools(sumElms);
+        toJoinTable();
+    }
+
+    private void initializeJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
+                                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate rightFp) throws IOException {
+        filename = database.getRootPath() + newTb + SUFFIX;
 
         memTable = leftIterator;
         diskTable = rightIterator;
@@ -64,14 +68,58 @@ public class Join implements Iterator<int[]> {
         naturalJoinPairs = pairs;
         isCartesianJoin = pairs.isEmpty();
 
-        sumElems = sumElms;
-        initSumTools();
-
-        rows = new ArrayList();
-        toJoinTable();
+        dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
     }
 
-    private void initSumTools() {
+    public void closeStream() {
+        try {
+            dis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (rowsRemaining == 0) {
+            closeStream();
+        }
+        return rowsRemaining > 0;
+    }
+
+    @Override
+    public int[] next() {
+        try {
+            int i = 0;
+            int[] row = new int[numCols];
+            while (i < numCols) {
+                if (pointerInBytes < BYTE_SIZE) {
+                    row[i++] = bytes[pointerInBytes] << 24 | (bytes[pointerInBytes + 1] & 0xFF) << 16 | (bytes[pointerInBytes + 2] & 0xFF) << 8 | (bytes[pointerInBytes + 3] & 0xFF);
+                    pointerInBytes += 4;
+                } else {
+                    pointerInBytes = 0;
+                    dis.read(bytes);
+                }
+            }
+            rowsRemaining--;
+            return row;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void initializeDataStream() throws IOException {
+        dis = Catalog.openStream(filename, true);
+
+        rowsRemaining = numRows;
+        pointerInBytes = 0;
+        bytes = new byte[BYTE_SIZE];
+        dis.read(bytes);
+    }
+
+    private void initSumTools(List<ParseElem> sumElms) {
+        sumElems = sumElms;
         sums = new long[sumElems.size()];
         sumCols = new int[sumElems.size()];
         for (int i = 0; i < sumCols.length; i++) {
@@ -80,13 +128,16 @@ public class Join implements Iterator<int[]> {
         }
     }
 
+    private int translateColByTableName(String tableName, int col) {
+        return tableToStartColMap.get(tableName) + database.getRelationByName(tableName).getNewByOldCol(col);
+    }
+
     private void toJoinTable() throws IOException {
         if (isCartesianJoin) cartesianJoin();
         else naturalJoin();
-    }
-
-    private int translateColByTableName(String tableName, int col) {
-        return tableToStartColMap.get(tableName) + database.getRelationByName(tableName).getNewByOldCol(col);
+        dos.close();
+        rowsRemaining = numRows;
+        initializeDataStream();
     }
 
     private void cartesianJoin() throws IOException {
@@ -124,6 +175,9 @@ public class Join implements Iterator<int[]> {
         int[][] bufferRows = new int[BUFFER_SIZE][];
         Map<Integer, Map<Integer, Set<Integer>>> bufferHash = new HashMap(); // k: col, v: map:{ k: colValue, v: list of row_numbers}
         int pointer = 0;
+
+        int loopTime = 0;
+
         while (true) {
             boolean isDiskEnd = true;
             while (diskTable.hasNext()) {
@@ -143,6 +197,7 @@ public class Join implements Iterator<int[]> {
 
             while (memTable.hasNext()) {
                 int[] memRow = (int[]) memTable.next();
+
                 Set<Integer> rowsInBuffer = new HashSet();
                 for (int i = 0; i < naturalJoinPredicates.length; i++) {
                     if (i > 0 && rowsInBuffer.size() == 0) break;
@@ -171,26 +226,25 @@ public class Join implements Iterator<int[]> {
                 else sums[i] += diskRow[sumCols[i] - memRow.length];
             }
         } else {
-            int[] newRow = mergeRow(memRow, diskRow);
-            rows.add(newRow);
+            mergeRow(memRow, diskRow);
         }
     }
 
-    private int[] mergeRow(int[] memRow, int[] diskRow) {
-        int[] row = new int[memRow.length + diskRow.length];
-        for (int i = 0; i < row.length; i++) {
-            if (i < memRow.length) row[i] = memRow[i];
-            else row[i] = diskRow[i - memRow.length];
+    private void mergeRow(int[] memRow, int[] diskRow) {
+        try {
+            numCols = memRow.length + diskRow.length;
+            for (int i = 0; i < numCols; i++) {
+                if (i < memRow.length) dos.writeInt(memRow[i]);
+                else dos.writeInt(diskRow[i - memRow.length]); // TODO write one line every time or write lines
+            }
+            numRows++;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return row;
     }
 
     public long[] getSums() {
         return sums;
-    }
-
-    public void setCurrRow(int currRow) {
-        this.currRow = currRow;
     }
 
     private void resetRightIterator() throws IOException {
@@ -204,21 +258,8 @@ public class Join implements Iterator<int[]> {
             memTable = null;
             memTable = new Filter(new Project(new Scan(rightTableName), database.getRelationByName(rightTableName).getColsToKeep()), rightTableFilterPredicate);
         } else if (memTable instanceof Join) {
-            ((Join) memTable).setCurrRow(0);
+            ((Join) memTable).initializeDataStream();
         }
-    }
-
-    @Override
-    public boolean hasNext() {
-        if (currRow < rows.size()) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public int[] next() {
-        return rows.get(currRow++);
     }
 
 }

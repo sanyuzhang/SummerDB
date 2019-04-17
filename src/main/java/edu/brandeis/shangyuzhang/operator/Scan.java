@@ -16,7 +16,7 @@ public class Scan implements Iterator<int[]> {
     private byte[] bytes;
 
     public Scan(String tb) throws IOException {
-        dis = Catalog.openStream(tb);
+        dis = Catalog.openStream(tb, false);
         numCols = Catalog.numCols(tb);
         rowsRemaining = Catalog.numRows(tb);
 

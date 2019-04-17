@@ -8,14 +8,17 @@ import edu.brandeis.shangyuzhang.util.Loader;
 import edu.brandeis.shangyuzhang.util.Parser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
+import static edu.brandeis.shangyuzhang.util.Constants.SUFFIX;
 
 public class Main {
 
     private static Database database = Database.getInstance();
 
-    private static final String TARGET_DATA_SET = Constants.XSMALL;
+    private static final String TARGET_DATA_SET = Constants.XXXSMALL;
     private static TestDataSet testDataSet;
 
     private static void load() {
@@ -66,9 +69,22 @@ public class Main {
         load();
         query();
 
+        cleanFile();
+
 //        Scanner scanner = new Scanner(System.in);
 //        String numQuery = scanner.nextLine();
 //        String query = scanner.nextLine();
 
     }
+
+    private static void cleanFile() throws IOException {
+        File folder = new File(database.getRootPath());
+        File fList[] = folder.listFiles();
+        for (File f : fList) {
+            if (f.getName().endsWith(SUFFIX)) {
+                f.delete();
+            }
+        }
+    }
+
 }

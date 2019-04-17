@@ -7,6 +7,7 @@ import java.util.*;
 public class Database {
 
     private static Database instance;
+    private static String rootPath;
     private static Map<String, Relation> relations;
 
     private Database() {
@@ -52,6 +53,14 @@ public class Database {
         for (Relation r : relations.values()) {
             r.resetOnNextQuery();
         }
+    }
+
+    public static String getRootPath() {
+        return rootPath;
+    }
+
+    public static void setRootPath(String rootPath) {
+        Database.rootPath = rootPath;
     }
 
     public void reset() {

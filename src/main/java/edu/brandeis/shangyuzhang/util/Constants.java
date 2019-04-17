@@ -13,4 +13,6 @@ public class Constants {
     public static final String EQUAL = "=";
     public static final String GREATER = ">";
 
+    public static final String SUFFIX = ".dat";
+
 }
