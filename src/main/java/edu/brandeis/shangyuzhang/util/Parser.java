@@ -134,8 +134,8 @@ public class Parser {
     public void optimize() {
         optimizer.initBestMap();
         joinOrder = optimizer.computeBest(true);
-        System.out.println("================= JOIN ORDER =================");
-        System.out.println(joinOrder);
+//        System.out.println("================= JOIN ORDER =================");
+//        System.out.println(joinOrder);
     }
 
     public void startEngine() throws IOException {
@@ -145,6 +145,7 @@ public class Parser {
         long[] sums = null;
         int numCols = 0;
         Map<String, Integer> tableToStartColMap = new HashMap();
+        String firstTableName = joinOrder.substring(0, 1);
 
         for (int i = 0; i < joinOrder.length(); i++) {
             boolean isLastJoin = i == joinOrder.length() - 1;
@@ -168,10 +169,10 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableToStartColMap.put(currTableName, numCols);
-                    sums = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, currTableName, pairs, filterPredicate, sumElems).getSums();
+                    sums = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, filterPredicate, sumElems).getSums();
                     break;
                 } else {
-                    currIterator = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, currTableName, pairs, filterPredicate);
+                    currIterator = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, filterPredicate);
                 }
             }
             resultIterator = currIterator;
