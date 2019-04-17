@@ -14,5 +14,6 @@ public class Constants {
     public static final String GREATER = ">";
 
     public static final String SUFFIX = ".dat";
+    public static final String COMMA = ",";
 
 }

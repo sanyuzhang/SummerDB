@@ -11,43 +11,47 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
+import static edu.brandeis.shangyuzhang.util.Constants.COMMA;
 import static edu.brandeis.shangyuzhang.util.Constants.SUFFIX;
 
 public class Main {
 
     private static Database database = Database.getInstance();
 
+    private static final boolean isLocal = false;
+
     private static final String TARGET_DATA_SET = Constants.XXXSMALL;
     private static TestDataSet testDataSet;
 
     private static void load() {
-        long start = System.currentTimeMillis();
-
         database.reset();
-        String[] tables = testDataSet.getFilePath().split(",");
+        String[] tables = testDataSet.getFilePath().split(COMMA);
 
         for (String table : tables) {
-//            Thread loader = new Thread(new MultiThreadLoader(table));
             Loader loader = new Loader(table);
             loader.start();
         }
+    }
 
-        long end = System.currentTimeMillis();
-        System.out.println("Loading took time: " + (end - start) + "\n");
+    private static void load(String filePaths) {
+        database.reset();
+        String[] tables = filePaths.split(COMMA);
+
+        for (String table : tables) {
+            Loader loader = new Loader(table);
+            loader.start();
+        }
     }
 
     private static void query() throws IOException {
-        long start = System.currentTimeMillis();
-//        System.gc();
-
         BufferedReader in = new BufferedReader(new FileReader(testDataSet.getQueryPath()));
         int numOfQuery = testDataSet.getNumQuery();
         while (numOfQuery > 0) {
             String[] lines = new String[4];
             for (int i = 0; i < lines.length; i++) {
                 lines[i] = in.readLine();
-                if (lines[i] == null) return;
             }
             in.readLine(); // skip the empty line
             Parser parser = new Parser(lines);
@@ -56,25 +60,6 @@ public class Main {
             numOfQuery--;
             database.resetOnNextQuery();
         }
-
-        long end = System.currentTimeMillis();
-        System.out.println("\nQuerying took time: " + (end - start));
-    }
-
-    public static void main(String[] args) throws IOException {
-
-        TestDataSetFactory factory = new TestDataSetFactory();
-        testDataSet = factory.createDataSet(TARGET_DATA_SET);
-
-        load();
-        query();
-
-        cleanFile();
-
-//        Scanner scanner = new Scanner(System.in);
-//        String numQuery = scanner.nextLine();
-//        String query = scanner.nextLine();
-
     }
 
     private static void cleanFile() throws IOException {
@@ -85,6 +70,40 @@ public class Main {
                 f.delete();
             }
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        if (isLocal) {
+            TestDataSetFactory factory = new TestDataSetFactory();
+            testDataSet = factory.createDataSet(TARGET_DATA_SET);
+            load();
+            query();
+        } else {
+            Scanner scanner = new Scanner(System.in);
+            String inputPaths = scanner.nextLine();
+
+            load(inputPaths);
+
+            int numOfQuery = Integer.parseInt(scanner.nextLine());
+            while (numOfQuery > 0) {
+                String[] lines = new String[4];
+                for (int i = 0; i < lines.length; i++) {
+                    lines[i] = scanner.nextLine();
+                    System.out.println(lines[i]);
+                }
+
+                scanner.nextLine(); // skip the empty line
+
+                Parser parser = new Parser(lines);
+                parser.optimize();
+                parser.startEngine();
+                numOfQuery--;
+                database.resetOnNextQuery();
+            }
+
+            scanner.close();
+        }
+        cleanFile();
     }
 
 }
