@@ -62,7 +62,7 @@ public class Main {
         }
     }
 
-    private static void cleanFile() throws IOException {
+    private static void cleanFile() {
         File folder = new File(database.getRootPath());
         File fList[] = folder.listFiles();
         for (File f : fList) {
@@ -91,7 +91,7 @@ public class Main {
                     lines[i] = scanner.nextLine();
                 }
 
-                scanner.nextLine(); // skip the empty line
+                scanner.nextLine();
 
                 Parser parser = new Parser(lines);
                 parser.optimize();
