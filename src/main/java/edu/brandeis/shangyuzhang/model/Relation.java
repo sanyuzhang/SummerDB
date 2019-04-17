@@ -12,7 +12,6 @@ public class Relation implements Estimator {
     private int numRows;
     private int[] minCols;
     private int[] maxCols;
-    private int[] sizeOfCols;
 
     private int[] colsToKeep;
     private Set<Integer> colsToKeepSet;
@@ -32,8 +31,6 @@ public class Relation implements Estimator {
 
         maxCols = new int[numCols];
         Arrays.fill(maxCols, Integer.MIN_VALUE);
-
-        sizeOfCols = new int[numCols];
 
         colsToKeepSet = new HashSet();
     }
@@ -65,12 +62,6 @@ public class Relation implements Estimator {
     public void addColValToSet(int index, int value) {
         minCols[index] = Math.min(minCols[index], value);
         maxCols[index] = Math.max(maxCols[index], value);
-    }
-
-    public void createSizeOfCols() {
-        for (int i = 0; i < numCols; i++) {
-            sizeOfCols[i] = numRows;
-        }
     }
 
     public void setEstimatedCardinality(double estimatedCardinality) {
@@ -109,10 +100,6 @@ public class Relation implements Estimator {
         return colsToKeepSet;
     }
 
-    public int[] getSizeOfCols() {
-        return sizeOfCols;
-    }
-
     public String getFilePath() {
         return filePath;
     }
@@ -135,7 +122,7 @@ public class Relation implements Estimator {
 
     @Override
     public double getCardinalEqualTo(int oldCol) {
-        return 1.0 * numRows / sizeOfCols[oldCol];
+        return 1.0 * numRows / numRows;
     }
 
     @Override
@@ -156,7 +143,7 @@ public class Relation implements Estimator {
 
     @Override
     public double getCardinalNaturalJoin(int oldCol1, Relation r2, int oldCol2) {
-        return 1.0 * this.numRows * r2.getNumRows() * Math.min(this.sizeOfCols[oldCol1], r2.getSizeOfCols()[oldCol2]) / this.sizeOfCols[oldCol1] / r2.getSizeOfCols()[oldCol2];
+        return 1.0 * this.numRows * r2.getNumRows() * Math.min(numRows, r2.getNumRows()) / numRows / r2.getNumRows();
     }
 
 }

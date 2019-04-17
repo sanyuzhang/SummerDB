@@ -17,7 +17,7 @@ public class Loader {
     private String tableName;
 
     public Loader(String p) {
-        String rootPath = FilenameUtils.getPath(p);
+        String rootPath = ".";
         database.setRootPath(rootPath);
 
         oldPath = p;
@@ -90,7 +90,6 @@ public class Loader {
             dos.close();
 
             relation.setNumRows(numRows);
-            relation.createSizeOfCols();
             database.addRelation(relation);
 
         } catch (IOException e) {

@@ -22,7 +22,7 @@ public class Main {
 
     private static final boolean isLocal = false;
 
-    private static final String TARGET_DATA_SET = Constants.XXXSMALL;
+    private static final String TARGET_DATA_SET = Constants.LARGE;
     private static TestDataSet testDataSet;
 
     private static void load() {

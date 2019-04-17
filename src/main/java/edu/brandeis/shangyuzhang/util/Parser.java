@@ -26,6 +26,7 @@ public class Parser {
     private static final String FROM = "FROM";
     private static final String WHERE = "WHERE";
     private static final String AND = "AND";
+    private static final String AND_CASE_INSENSITIVE = "[AND,and]";
 
     private String[] relations;
     private Optimizer optimizer;
@@ -74,7 +75,7 @@ public class Parser {
 
     private void parseWhere(String line) {
         line = cleanSqlForParsing(line, new String[]{WHERE, SPACES});
-        for (String elem : line.split(AND)) {
+        for (String elem : line.split(AND_CASE_INSENSITIVE)) {
             String[] elems = elem.split(EQUAL);
             ParseElem left = parseTableAndCol(elems[0]);
             ParseElem right = parseTableAndCol(elems[1]);
