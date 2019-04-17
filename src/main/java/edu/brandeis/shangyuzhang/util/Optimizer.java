@@ -180,27 +180,24 @@ public class Optimizer {
     }
 
     private double calculateNaturalJoinCardinal(String order) {
-        if (order.contains("FDCA")|| order.contains("FDCB")) {
-            System.out.print("");
-        }
         if (cardinalMap.containsKey(order)) {
             return cardinalMap.get(order);
         }
+        String joinedTable = String.valueOf(order.charAt(0));
         double cardinality = 0f;
-        String maxTable = String.valueOf(order.charAt(0));
         for (int i = 1; i < order.length(); i++) {
             String currTable = String.valueOf(order.charAt(i));
-            String pairKey = maxTable.compareTo(currTable) < 0 ? maxTable + currTable : currTable + maxTable;
-            cardinality += calculateTwoNaturalJoinCardinal(pairKey);
-            maxTable = getLargerTableByName(maxTable, currTable);
+            double innerCardinality = Double.MAX_VALUE;
+            for (char c : joinedTable.toCharArray()) {
+                String preTable = String.valueOf(c);
+                String pairKey = preTable.compareTo(currTable) < 0 ? preTable + currTable : currTable + preTable;
+                innerCardinality = Math.min(innerCardinality, calculateTwoNaturalJoinCardinal(pairKey));
+            }
+            cardinality += innerCardinality;
+            joinedTable += currTable;
         }
         cardinalMap.put(order, cardinality);
         return cardinality;
-    }
-
-    private String getLargerTableByName(String t1, String t2) {
-        double numRows1 = cardinalMap.get(t1), numRows2 = cardinalMap.get(t2);
-        return numRows1 > numRows2 ? t1 : t2;
     }
 
     private double calculateTwoNaturalJoinCardinal(String pairKey) {
