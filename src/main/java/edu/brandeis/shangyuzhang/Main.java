@@ -89,7 +89,6 @@ public class Main {
                 String[] lines = new String[4];
                 for (int i = 0; i < lines.length; i++) {
                     lines[i] = scanner.nextLine();
-                    System.out.println(lines[i]);
                 }
 
                 scanner.nextLine(); // skip the empty line
