@@ -1,26 +1,15 @@
 package edu.brandeis.shangyuzhang.operator;
 
 import edu.brandeis.shangyuzhang.model.*;
-import edu.brandeis.shangyuzhang.util.Catalog;
 import edu.brandeis.shangyuzhang.util.Database;
 
 import java.io.*;
 import java.util.*;
 
-import static edu.brandeis.shangyuzhang.util.Constants.SUFFIX;
+public class MemJoin implements Iterator<int[]> {
 
-public class Join implements Iterator<int[]> {
-
-    private DataOutputStream dos;
-    private DataInputStream dis;
-    private String filename;
-    private int rowsRemaining;
-    private int numRows;
-    private int numCols = 0;
-
-    private int pointerInBytes;
-    private static final int BYTE_SIZE = 1024 * 32;
-    private byte[] bytes;
+    private int currRow;
+    private List<int[]> rows;
 
     private Iterator diskTable;
     private Iterator memTable;
@@ -40,25 +29,26 @@ public class Join implements Iterator<int[]> {
     private static final int BUFFER_SIZE = 1024 * 32;
     private Database database = Database.getInstance();
 
-    public Join(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
-        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, firstFilterPred);
+    public MemJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
+                   String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
+        initializeJoin(leftIterator, rightIterator, startColMap, rightTb, pairs, firstFilterPred);
         toJoinTable();
     }
 
-    public Join(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred, List<ParseElem> sumElms) throws IOException {
-        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, firstFilterPred);
+    public MemJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
+                   String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred, List<ParseElem> sumElms) throws IOException {
+        initializeJoin(leftIterator, rightIterator, startColMap, rightTb, pairs, firstFilterPred);
         initSumTools(sumElms);
         toJoinTable();
     }
 
     private void initializeJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                                String newTb, String firstTable, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
-        filename = database.getRootPath() + newTb + SUFFIX;
-
+                                String firstTable, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) {
         memTable = leftIterator;
         diskTable = rightIterator;
+
+        currRow = 0;
+        rows = new ArrayList();
 
         tableToStartColMap = startColMap;
 
@@ -67,55 +57,24 @@ public class Join implements Iterator<int[]> {
 
         naturalJoinPairs = pairs;
         isCartesianJoin = pairs.isEmpty();
-
-        dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
     }
 
-    public void closeStream() {
-        try {
-            dis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public boolean isEmptyTable() {
+        return rows.size() == 0;
     }
 
     @Override
     public boolean hasNext() {
-        if (rowsRemaining == 0) {
-            closeStream();
-        }
-        return rowsRemaining > 0;
+        return currRow < rows.size();
     }
 
     @Override
     public int[] next() {
-        try {
-            int i = 0;
-            int[] row = new int[numCols];
-            while (i < numCols) {
-                if (pointerInBytes < BYTE_SIZE) {
-                    row[i++] = bytes[pointerInBytes] << 24 | (bytes[pointerInBytes + 1] & 0xFF) << 16 | (bytes[pointerInBytes + 2] & 0xFF) << 8 | (bytes[pointerInBytes + 3] & 0xFF);
-                    pointerInBytes += 4;
-                } else {
-                    pointerInBytes = 0;
-                    dis.read(bytes);
-                }
-            }
-            rowsRemaining--;
-            return row;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return rows.get(currRow++);
     }
 
-    public void initializeDataStream() throws IOException {
-        dis = Catalog.openStream(filename, true);
-
-        rowsRemaining = numRows;
-        pointerInBytes = 0;
-        bytes = new byte[BYTE_SIZE];
-        dis.read(bytes);
+    public void resetIterator() {
+        currRow = 0;
     }
 
     private void initSumTools(List<ParseElem> sumElms) {
@@ -135,9 +94,7 @@ public class Join implements Iterator<int[]> {
     private void toJoinTable() throws IOException {
         if (isCartesianJoin) cartesianJoin();
         else naturalJoin();
-        dos.close();
-        rowsRemaining = numRows;
-        initializeDataStream();
+        resetIterator();
     }
 
     private void cartesianJoin() throws IOException {
@@ -224,21 +181,12 @@ public class Join implements Iterator<int[]> {
                 else sums[i] += diskRow[sumCols[i] - memRow.length];
             }
         } else {
-            mergeRow(memRow, diskRow);
-        }
-    }
-
-    private void mergeRow(int[] memRow, int[] diskRow) {
-        try {
-            if (numCols == 0)
-                numCols = memRow.length + diskRow.length;
-            for (int i = 0; i < numCols; i++) {
-                if (i < memRow.length) dos.writeInt(memRow[i]);
-                else dos.writeInt(diskRow[i - memRow.length]);
+            int[] merged = new int[memRow.length + diskRow.length];
+            for (int i = 0; i < merged.length; i++) {
+                if (i < memRow.length) merged[i] = memRow[i];
+                else merged[i] = diskRow[i - memRow.length];
             }
-            numRows++;
-        } catch (IOException e) {
-            e.printStackTrace();
+            rows.add(merged);
         }
     }
 
@@ -256,8 +204,10 @@ public class Join implements Iterator<int[]> {
         } else if (memTable instanceof Filter) {
             memTable = null;
             memTable = new Filter(new Project(new Scan(firstTableName), database.getRelationByName(firstTableName).getColsToKeep()), firstTableFilterPredicate);
-        } else if (memTable instanceof Join) {
-            ((Join) memTable).initializeDataStream();
+        } else if (memTable instanceof MemJoin) {
+            ((MemJoin) memTable).resetIterator();
+        } else if (memTable instanceof DiskJoin) {
+            ((DiskJoin) memTable).initializeDataStream();
         }
     }
 

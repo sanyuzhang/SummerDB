@@ -10,6 +10,8 @@ public class Database {
     private static String rootPath;
     private static Map<String, Relation> relations;
 
+    private boolean isLargeDataset;
+
     private Database() {
         relations = new HashMap<>();
     }
@@ -49,6 +51,14 @@ public class Database {
         return relations.get(tableName).getNumRows();
     }
 
+    public boolean isLargeDataset() {
+        return isLargeDataset;
+    }
+
+    public void setLargeDataset(boolean largeDataset) {
+        isLargeDataset = largeDataset;
+    }
+
     public void resetOnNextQuery() {
         for (Relation r : relations.values()) {
             r.resetOnNextQuery();
@@ -64,6 +74,7 @@ public class Database {
     }
 
     public void reset() {
+        isLargeDataset = false;
         relations.clear();
     }
 

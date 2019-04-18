@@ -1,10 +1,7 @@
 package edu.brandeis.shangyuzhang.util;
 
 import edu.brandeis.shangyuzhang.model.*;
-import edu.brandeis.shangyuzhang.operator.Filter;
-import edu.brandeis.shangyuzhang.operator.Join;
-import edu.brandeis.shangyuzhang.operator.Project;
-import edu.brandeis.shangyuzhang.operator.Scan;
+import edu.brandeis.shangyuzhang.operator.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -46,8 +43,6 @@ public class Parser {
         parsePredicate(and);
 
         database.initOldNewColsMapping();
-
-//        printRelations();
     }
 
     private String cleanSqlForParsing(String line, String[] removes) {
@@ -112,31 +107,9 @@ public class Parser {
         return new ParseElem(r, col);
     }
 
-    private void printRelations() {
-        System.out.println("\n=============== PRINT TABLES ===============");
-        for (String r : relations) {
-            System.out.println("TABLE " + r);
-            Relation relation = database.getRelationByName(r);
-            for (int c : relation.getColsToKeepSet()) {
-                System.out.println("PROJ COL " + c + " - NEW COL" + relation.getNewByOldCol(c));
-            }
-        }
-        System.out.println("=============== PRINT PREDICATES ===============");
-        for (Map.Entry<String, FilterPredicate> entry : optimizer.getFilterPredicates().entrySet()) {
-            System.out.println("TABLE " + entry.getKey());
-            System.out.println(entry.getKey() + entry.getValue().toString());
-        }
-        System.out.println("=============== PRINT NATURAL JOIN ===============");
-        for (ParseElem[] elems : optimizer.getNaturalJoinPairs()) {
-            System.out.println(elems[0].table + "." + elems[0].col + " = " + elems[1].table + "." + elems[1].col);
-        }
-    }
-
     public void optimize() {
         optimizer.initBestMap();
         joinOrder = optimizer.computeBest(true);
-//        System.out.println("================= JOIN ORDER =================");
-//        System.out.println(joinOrder);
     }
 
     public void startEngine() throws IOException {
@@ -150,6 +123,14 @@ public class Parser {
         FilterPredicate firstFilterPred = optimizer.getFilterPredicateByTableName(firstTableName);
 
         for (int i = 0; i < joinOrder.length(); i++) {
+            if (resultIterator instanceof MemJoin && ((MemJoin) resultIterator).isEmptyTable()) {
+                sums = new long[sumElems.size()];
+                break;
+            } else if (resultIterator instanceof DiskJoin && ((DiskJoin) resultIterator).isEmptyTable()) {
+                sums = new long[sumElems.size()];
+                break;
+            }
+
             boolean isLastJoin = i == joinOrder.length() - 1;
             String newTableName = joinOrder.substring(0, i + 1);
             String currTableName = String.valueOf(joinOrder.charAt(i));
@@ -171,10 +152,14 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableToStartColMap.put(currTableName, numCols);
-                    sums = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred, sumElems).getSums();
+                    sums = new MemJoin(resultIterator, currIterator, tableToStartColMap, firstTableName, pairs, firstFilterPred, sumElems).getSums();
                     break;
                 } else {
-                    currIterator = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred);
+                    if (database.isLargeDataset()) {
+                        currIterator = new DiskJoin(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred);
+                    } else {
+                        currIterator = new MemJoin(resultIterator, currIterator, tableToStartColMap, firstTableName, pairs, firstFilterPred);
+                    }
                 }
             }
             resultIterator = currIterator;
@@ -185,17 +170,15 @@ public class Parser {
         }
 
         StringBuilder result = new StringBuilder();
-        if (sums != null) {
-            int zeroCount = 0;
-            for (long s : sums) {
-                zeroCount += s == 0 ? 1 : 0;
-                result.append(s + ",");
-            }
-            if (zeroCount == sums.length) {
-                result = new StringBuilder();
-                for (int i = 0; i < zeroCount; i++) {
-                    result.append(",");
-                }
+        int zeroCount = 0;
+        for (long s : sums) {
+            zeroCount += s == 0 ? 1 : 0;
+            result.append(s + ",");
+        }
+        if (zeroCount == sums.length) {
+            result = new StringBuilder();
+            for (int i = 0; i < zeroCount; i++) {
+                result.append(",");
             }
         }
         result.deleteCharAt(result.length() - 1);
