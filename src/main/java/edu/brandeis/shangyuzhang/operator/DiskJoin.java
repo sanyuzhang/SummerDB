@@ -35,23 +35,12 @@ public class DiskJoin implements Iterator<int[]> {
 
     private boolean isCartesianJoin;
 
-    private List<ParseElem> sumElems;
-    private long[] sums;
-    private int[] sumCols;
-
     private static final int BUFFER_SIZE = 1024 * 32;
     private Database database = Database.getInstance();
 
     public DiskJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
                     String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
         initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, firstFilterPred);
-        toJoinTable();
-    }
-
-    public DiskJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                    String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred, List<ParseElem> sumElms) throws IOException {
-        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, firstFilterPred);
-        initSumTools(sumElms);
         toJoinTable();
     }
 
@@ -122,16 +111,6 @@ public class DiskJoin implements Iterator<int[]> {
         pointerInBytes = 0;
         bytes = new byte[BYTE_SIZE];
         dis.read(bytes);
-    }
-
-    private void initSumTools(List<ParseElem> sumElms) {
-        sumElems = sumElms;
-        sums = new long[sumElems.size()];
-        sumCols = new int[sumElems.size()];
-        for (int i = 0; i < sumCols.length; i++) {
-            ParseElem elem = sumElems.get(i);
-            sumCols[i] = translateColByTableName(elem.table, elem.col);
-        }
     }
 
     private int translateColByTableName(String tableName, int col) {
@@ -224,14 +203,7 @@ public class DiskJoin implements Iterator<int[]> {
     }
 
     private void addToResultRows(int[] memRow, int[] diskRow) {
-        if (sumElems != null) {
-            for (int i = 0; i < sumCols.length; i++) {
-                if (sumCols[i] < memRow.length) sums[i] += memRow[sumCols[i]];
-                else sums[i] += diskRow[sumCols[i] - memRow.length];
-            }
-        } else {
-            mergeRow(memRow, diskRow);
-        }
+        mergeRow(memRow, diskRow);
     }
 
     private void mergeRow(int[] memRow, int[] diskRow) {
@@ -246,10 +218,6 @@ public class DiskJoin implements Iterator<int[]> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public long[] getSums() {
-        return sums;
     }
 
     private void resetRightIterator() throws IOException {

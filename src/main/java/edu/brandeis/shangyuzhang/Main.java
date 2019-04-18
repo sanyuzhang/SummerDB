@@ -27,6 +27,10 @@ public class Main {
 
     private static void load() {
         database.reset();
+
+        String filePaths = testDataSet.getFilePath();
+        database.setLargeDataset(!filePaths.contains("data/x") && !filePaths.contains("data/s") && !filePaths.contains("data/m"));
+
         String[] tables = testDataSet.getFilePath().split(COMMA);
 
         for (String table : tables) {
@@ -37,6 +41,8 @@ public class Main {
 
     private static void load(String filePaths) {
         database.reset();
+        database.setLargeDataset(!filePaths.contains("data/x") && !filePaths.contains("data/s") && !filePaths.contains("data/m"));
+
         String[] tables = filePaths.split(COMMA);
 
         for (String table : tables) {
@@ -46,6 +52,8 @@ public class Main {
     }
 
     private static void query() throws IOException {
+        long start = System.currentTimeMillis();
+
         BufferedReader in = new BufferedReader(new FileReader(testDataSet.getQueryPath()));
         int numOfQuery = testDataSet.getNumQuery();
         while (numOfQuery > 0) {
@@ -60,6 +68,8 @@ public class Main {
             numOfQuery--;
             database.resetOnNextQuery();
         }
+        long end = System.currentTimeMillis();
+        System.out.println("Cost - " + (end - start));
     }
 
     private static void cleanFile() {

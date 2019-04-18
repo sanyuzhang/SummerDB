@@ -1,10 +1,7 @@
 package edu.brandeis.shangyuzhang.util;
 
 import edu.brandeis.shangyuzhang.model.*;
-import edu.brandeis.shangyuzhang.operator.Filter;
-import edu.brandeis.shangyuzhang.operator.MemJoin;
-import edu.brandeis.shangyuzhang.operator.Project;
-import edu.brandeis.shangyuzhang.operator.Scan;
+import edu.brandeis.shangyuzhang.operator.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -126,6 +123,14 @@ public class Parser {
         FilterPredicate firstFilterPred = optimizer.getFilterPredicateByTableName(firstTableName);
 
         for (int i = 0; i < joinOrder.length(); i++) {
+            if (resultIterator instanceof MemJoin && ((MemJoin) resultIterator).isEmptyTable()) {
+                sums = new long[sumElems.size()];
+                break;
+            } else if (resultIterator instanceof DiskJoin && ((DiskJoin) resultIterator).isEmptyTable()) {
+                sums = new long[sumElems.size()];
+                break;
+            }
+
             boolean isLastJoin = i == joinOrder.length() - 1;
             String newTableName = joinOrder.substring(0, i + 1);
             String currTableName = String.valueOf(joinOrder.charAt(i));
@@ -147,10 +152,14 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableToStartColMap.put(currTableName, numCols);
-                    sums = new MemJoin(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred, sumElems).getSums();
+                    sums = new MemJoin(resultIterator, currIterator, tableToStartColMap, firstTableName, pairs, firstFilterPred, sumElems).getSums();
                     break;
                 } else {
-                    currIterator = new MemJoin(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred);
+                    if (database.isLargeDataset()) {
+                        currIterator = new DiskJoin(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred);
+                    } else {
+                        currIterator = new MemJoin(resultIterator, currIterator, tableToStartColMap, firstTableName, pairs, firstFilterPred);
+                    }
                 }
             }
             resultIterator = currIterator;
@@ -161,17 +170,15 @@ public class Parser {
         }
 
         StringBuilder result = new StringBuilder();
-        if (sums != null) {
-            int zeroCount = 0;
-            for (long s : sums) {
-                zeroCount += s == 0 ? 1 : 0;
-                result.append(s + ",");
-            }
-            if (zeroCount == sums.length) {
-                result = new StringBuilder();
-                for (int i = 0; i < zeroCount; i++) {
-                    result.append(",");
-                }
+        int zeroCount = 0;
+        for (long s : sums) {
+            zeroCount += s == 0 ? 1 : 0;
+            result.append(s + ",");
+        }
+        if (zeroCount == sums.length) {
+            result = new StringBuilder();
+            for (int i = 0; i < zeroCount; i++) {
+                result.append(",");
             }
         }
         result.deleteCharAt(result.length() - 1);

@@ -74,6 +74,7 @@ public class Database {
     }
 
     public void reset() {
+        isLargeDataset = false;
         relations.clear();
     }
 

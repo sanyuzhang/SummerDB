@@ -30,20 +30,20 @@ public class MemJoin implements Iterator<int[]> {
     private Database database = Database.getInstance();
 
     public MemJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                   String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
-        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, firstFilterPred);
+                   String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
+        initializeJoin(leftIterator, rightIterator, startColMap, rightTb, pairs, firstFilterPred);
         toJoinTable();
     }
 
     public MemJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                   String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred, List<ParseElem> sumElms) throws IOException {
-        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, firstFilterPred);
+                   String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred, List<ParseElem> sumElms) throws IOException {
+        initializeJoin(leftIterator, rightIterator, startColMap, rightTb, pairs, firstFilterPred);
         initSumTools(sumElms);
         toJoinTable();
     }
 
     private void initializeJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                                String newTb, String firstTable, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) {
+                                String firstTable, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) {
         memTable = leftIterator;
         diskTable = rightIterator;
 
@@ -181,17 +181,13 @@ public class MemJoin implements Iterator<int[]> {
                 else sums[i] += diskRow[sumCols[i] - memRow.length];
             }
         } else {
-            mergeRow(memRow, diskRow);
+            int[] merged = new int[memRow.length + diskRow.length];
+            for (int i = 0; i < merged.length; i++) {
+                if (i < memRow.length) merged[i] = memRow[i];
+                else merged[i] = diskRow[i - memRow.length];
+            }
+            rows.add(merged);
         }
-    }
-
-    private void mergeRow(int[] memRow, int[] diskRow) {
-        int[] merged = new int[memRow.length + diskRow.length];
-        for (int i = 0; i < merged.length; i++) {
-            if (i < memRow.length) merged[i] = memRow[i];
-            else merged[i] = diskRow[i - memRow.length];
-        }
-        rows.add(merged);
     }
 
     public long[] getSums() {
