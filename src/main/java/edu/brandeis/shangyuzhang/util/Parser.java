@@ -2,7 +2,7 @@ package edu.brandeis.shangyuzhang.util;
 
 import edu.brandeis.shangyuzhang.model.*;
 import edu.brandeis.shangyuzhang.operator.Filter;
-import edu.brandeis.shangyuzhang.operator.Join;
+import edu.brandeis.shangyuzhang.operator.MemJoin;
 import edu.brandeis.shangyuzhang.operator.Project;
 import edu.brandeis.shangyuzhang.operator.Scan;
 
@@ -171,10 +171,10 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableToStartColMap.put(currTableName, numCols);
-                    sums = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred, sumElems).getSums();
+                    sums = new MemJoin(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred, sumElems).getSums();
                     break;
                 } else {
-                    currIterator = new Join(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred);
+                    currIterator = new MemJoin(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred);
                 }
             }
             resultIterator = currIterator;
