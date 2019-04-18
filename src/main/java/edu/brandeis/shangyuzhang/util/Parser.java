@@ -46,8 +46,6 @@ public class Parser {
         parsePredicate(and);
 
         database.initOldNewColsMapping();
-
-//        printRelations();
     }
 
     private String cleanSqlForParsing(String line, String[] removes) {
@@ -112,31 +110,9 @@ public class Parser {
         return new ParseElem(r, col);
     }
 
-    private void printRelations() {
-        System.out.println("\n=============== PRINT TABLES ===============");
-        for (String r : relations) {
-            System.out.println("TABLE " + r);
-            Relation relation = database.getRelationByName(r);
-            for (int c : relation.getColsToKeepSet()) {
-                System.out.println("PROJ COL " + c + " - NEW COL" + relation.getNewByOldCol(c));
-            }
-        }
-        System.out.println("=============== PRINT PREDICATES ===============");
-        for (Map.Entry<String, FilterPredicate> entry : optimizer.getFilterPredicates().entrySet()) {
-            System.out.println("TABLE " + entry.getKey());
-            System.out.println(entry.getKey() + entry.getValue().toString());
-        }
-        System.out.println("=============== PRINT NATURAL JOIN ===============");
-        for (ParseElem[] elems : optimizer.getNaturalJoinPairs()) {
-            System.out.println(elems[0].table + "." + elems[0].col + " = " + elems[1].table + "." + elems[1].col);
-        }
-    }
-
     public void optimize() {
         optimizer.initBestMap();
         joinOrder = optimizer.computeBest(true);
-//        System.out.println("================= JOIN ORDER =================");
-//        System.out.println(joinOrder);
     }
 
     public void startEngine() throws IOException {
