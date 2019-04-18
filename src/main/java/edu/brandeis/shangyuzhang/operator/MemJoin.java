@@ -26,7 +26,7 @@ public class MemJoin implements Iterator<int[]> {
     private long[] sums;
     private int[] sumCols;
 
-    private static final int BUFFER_SIZE = 1024 * 16;
+    private static final int BUFFER_SIZE = 1024 * 32;
     private Database database = Database.getInstance();
 
     public MemJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
