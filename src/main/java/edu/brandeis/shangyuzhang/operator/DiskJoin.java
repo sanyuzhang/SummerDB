@@ -81,6 +81,10 @@ public class DiskJoin implements Iterator<int[]> {
         }
     }
 
+    public boolean isEmptyTable() {
+        return numRows == 0;
+    }
+
     @Override
     public boolean hasNext() {
         if (rowsRemaining == 0) {

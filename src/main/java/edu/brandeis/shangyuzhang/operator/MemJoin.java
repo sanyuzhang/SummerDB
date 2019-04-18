@@ -59,6 +59,10 @@ public class MemJoin implements Iterator<int[]> {
         isCartesianJoin = pairs.isEmpty();
     }
 
+    public boolean isEmptyTable() {
+        return rows.size() == 0;
+    }
+
     @Override
     public boolean hasNext() {
         return currRow < rows.size();
