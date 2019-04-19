@@ -118,15 +118,12 @@ public class Parser {
 
         long[] sums = null;
         int numCols = 0;
-        Map<String, Integer> tableToStartColMap = new HashMap();
+        Map<String, Integer> tableStartIndexMap = new HashMap();
         String firstTableName = joinOrder.substring(0, 1);
         FilterPredicate firstFilterPred = optimizer.getFilterPredicateByTableName(firstTableName);
 
         for (int i = 0; i < joinOrder.length(); i++) {
-            if (resultIterator instanceof MemJoin && ((MemJoin) resultIterator).isEmptyTable()) {
-                sums = new long[sumElems.size()];
-                break;
-            } else if (resultIterator instanceof DiskJoin && ((DiskJoin) resultIterator).isEmptyTable()) {
+            if (resultIterator instanceof BaseJoin && ((BaseJoin) resultIterator).isEmptyTable()) {
                 sums = new long[sumElems.size()];
                 break;
             }
@@ -151,21 +148,21 @@ public class Parser {
                     if (isNaturalJoinable(joinedTableNames.toString(), currTableName, pair)) pairs.add(pair);
                 }
                 if (isLastJoin) {
-                    tableToStartColMap.put(currTableName, numCols);
-                    sums = new Sum(resultIterator, currIterator, tableToStartColMap, firstTableName, pairs, firstFilterPred, sumElems).getSums();
+                    tableStartIndexMap.put(currTableName, numCols);
+                    sums = new Sum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate, sumElems).getSums();
                     break;
                 } else {
                     if (database.isLargeDataset()) {
-                        currIterator = new DiskJoin(resultIterator, currIterator, tableToStartColMap, newTableName, firstTableName, pairs, firstFilterPred);
+                        currIterator = new DiskJoin(resultIterator, currIterator, tableStartIndexMap, newTableName, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate);
                     } else {
-                        currIterator = new MemJoin(resultIterator, currIterator, tableToStartColMap, firstTableName, pairs, firstFilterPred);
+                        currIterator = new MemJoin(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate);
                     }
                 }
             }
             resultIterator = currIterator;
 
             joinedTableNames.append(currTableName);
-            tableToStartColMap.put(currTableName, numCols);
+            tableStartIndexMap.put(currTableName, numCols);
             numCols += database.getRelationByName(currTableName).getNumOfColsToKeep();
         }
 
