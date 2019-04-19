@@ -73,9 +73,4 @@ public class Database {
         Database.rootPath = rootPath;
     }
 
-    public void reset() {
-        isLargeDataset = false;
-        relations.clear();
-    }
-
 }

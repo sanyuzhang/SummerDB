@@ -149,7 +149,9 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableStartIndexMap.put(currTableName, numCols);
-                    sums = new Sum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate, sumElems).getSums();
+                    sums = database.isLargeDataset() ?
+                            new MemSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate, sumElems).getSums() :
+                            new DiskSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate, sumElems).getSums();
                     break;
                 } else {
                     currIterator = database.isLargeDataset() ?

@@ -6,14 +6,14 @@ import edu.brandeis.shangyuzhang.model.ParseElem;
 import java.io.IOException;
 import java.util.*;
 
-public class Sum extends BaseJoin {
+public class MemSum extends BaseJoin {
 
     private List<ParseElem> sumElems;
     private long[] sums;
     private int[] sumCols;
 
-    public Sum(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-               List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, String currTable, FilterPredicate currFilterPred, List<ParseElem> sumElms) throws IOException {
+    public MemSum(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
+                  List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, String currTable, FilterPredicate currFilterPred, List<ParseElem> sumElms) throws IOException {
         super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, currTable, currFilterPred);
         initSumTools(sumElms);
         toJoinTable();
