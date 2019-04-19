@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b6b0674-dde4-49fa-8e08-42b9d69e7a18" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -32,8 +32,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="145" column="29" lean-forward="true" selection-start-line="145" selection-start-column="29" selection-end-line="145" selection-end-column="29" />
+            <state relative-caret-position="408">
+              <caret line="116" column="52" selection-start-line="116" selection-start-column="52" selection-end-line="116" selection-end-column="52" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#5230#5231#0" expanded="true" />
@@ -90,7 +90,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>leftTableName</find>
       <find>144861681919729</find>
       <find>464580519</find>
       <find>dataou</find>
@@ -120,6 +119,7 @@
       <find>numRows`</find>
       <find>rightTable</find>
       <find>numRows</find>
+      <find>resetLeftIterator</find>
     </findStrings>
     <dirStrings>
       <dir>D:\Dev\SummerDB\data\xxxs</dir>
@@ -764,8 +764,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="145" column="29" lean-forward="true" selection-start-line="145" selection-start-column="29" selection-end-line="145" selection-end-column="29" />
+        <state relative-caret-position="408">
+          <caret line="116" column="52" selection-start-line="116" selection-start-column="52" selection-end-line="116" selection-end-column="52" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#5230#5231#0" expanded="true" />

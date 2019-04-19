@@ -78,14 +78,14 @@ public abstract class BaseJoin {
     }
 
     protected void naturalJoin() throws IOException {
-        List<Integer> newColsOnDisk = new ArrayList();
+        List<Integer> rightNewCols = new ArrayList();
         NaturalJoinPredicate[] naturalJoinPredicates = new NaturalJoinPredicate[naturalJoinPairs.size()];
         for (int i = 0; i < naturalJoinPairs.size(); i++) {
             ParseElem leftElem = naturalJoinPairs.get(i)[0], rightElem = naturalJoinPairs.get(i)[1];
-            int memCol = translateColByTableName(leftElem.table, leftElem.col);
-            int diskCol = database.getRelationByName(rightElem.table).getNewByOldCol(rightElem.col);
-            naturalJoinPredicates[i] = new NaturalJoinPredicate(diskCol, memCol);
-            newColsOnDisk.add(diskCol);
+            int leftCol = translateColByTableName(leftElem.table, leftElem.col);
+            int rightCol = database.getRelationByName(rightElem.table).getNewByOldCol(rightElem.col);
+            naturalJoinPredicates[i] = new NaturalJoinPredicate(rightCol, leftCol);
+            rightNewCols.add(rightCol);
         }
 
         int[][] bufferRows = new int[BUFFER_SIZE][];
@@ -96,12 +96,12 @@ public abstract class BaseJoin {
             boolean isRightEnd = true;
             while (rightTable.hasNext()) {
                 bufferRows[pointer] = (int[]) rightTable.next();
-                for (int i = 0; i < newColsOnDisk.size(); i++) {
-                    int diskCol = newColsOnDisk.get(i);
-                    int disColValue = bufferRows[pointer][diskCol];
-                    bufferHash.putIfAbsent(diskCol, new HashMap());
-                    bufferHash.get(diskCol).putIfAbsent(disColValue, new HashSet());
-                    bufferHash.get(diskCol).get(disColValue).add(pointer);
+                for (int i = 0; i < rightNewCols.size(); i++) {
+                    int rightCol = rightNewCols.get(i);
+                    int rightColValue = bufferRows[pointer][rightCol];
+                    bufferHash.putIfAbsent(rightCol, new HashMap());
+                    bufferHash.get(rightCol).putIfAbsent(rightColValue, new HashSet());
+                    bufferHash.get(rightCol).get(rightColValue).add(pointer);
                 }
                 pointer++;
                 if (pointer < BUFFER_SIZE) continue;
@@ -116,10 +116,10 @@ public abstract class BaseJoin {
                 for (int i = 0; i < naturalJoinPredicates.length; i++) {
                     if (i > 0 && rowsInBuffer.size() == 0) break;
                     NaturalJoinPredicate predicate = naturalJoinPredicates[i];
-                    int diskCol = predicate.col1, targetValue = leftRow[predicate.col2];
-                    if (bufferHash.containsKey(diskCol) && bufferHash.get(diskCol).containsKey(targetValue)) {
-                        if (i == 0) rowsInBuffer = new HashSet(bufferHash.get(diskCol).get(targetValue));
-                        else rowsInBuffer.retainAll(bufferHash.get(diskCol).get(targetValue));
+                    int rightCol = predicate.col1, leftColValue = leftRow[predicate.col2];
+                    if (bufferHash.containsKey(rightCol) && bufferHash.get(rightCol).containsKey(leftColValue)) {
+                        if (i == 0) rowsInBuffer = new HashSet(bufferHash.get(rightCol).get(leftColValue));
+                        else rowsInBuffer.retainAll(bufferHash.get(rightCol).get(leftColValue));
                     } else if (i > 0) {
                         rowsInBuffer.clear();
                     }
