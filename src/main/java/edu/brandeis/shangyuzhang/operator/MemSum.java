@@ -13,8 +13,9 @@ public class MemSum extends BaseJoin {
     private int[] sumCols;
 
     public MemSum(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                  List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, String currTable, FilterPredicate currFilterPred, List<ParseElem> sumElms) throws IOException {
-        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, currTable, currFilterPred);
+                  List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, int firstNumOfRows,
+                  String currTable, FilterPredicate currFilterPred, int currNumOfRows, List<ParseElem> sumElms) throws IOException {
+        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, firstNumOfRows, currTable, currFilterPred, currNumOfRows);
         initSumTools(sumElms);
         toJoinTable();
     }
@@ -43,11 +44,6 @@ public class MemSum extends BaseJoin {
 
     public long[] getSums() {
         return sums;
-    }
-
-    @Override
-    public boolean isEmptyTable() {
-        return false;
     }
 
     @Override

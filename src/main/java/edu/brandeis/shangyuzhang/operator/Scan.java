@@ -1,12 +1,13 @@
 package edu.brandeis.shangyuzhang.operator;
 
+import edu.brandeis.shangyuzhang.interfaces.RowsCounter;
 import edu.brandeis.shangyuzhang.util.Catalog;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class Scan implements Iterator<int[]> {
+public class Scan implements Iterator<int[]>, RowsCounter {
 
     private final DataInputStream dis;
     private final int numCols;
@@ -56,10 +57,6 @@ public class Scan implements Iterator<int[]> {
         return null;
     }
 
-    public int getNumRows() {
-        return numRows;
-    }
-
     public void closeStream() {
         try {
             dis.close();
@@ -68,4 +65,8 @@ public class Scan implements Iterator<int[]> {
         }
     }
 
+    @Override
+    public int getNumOfRows() {
+        return numRows;
+    }
 }

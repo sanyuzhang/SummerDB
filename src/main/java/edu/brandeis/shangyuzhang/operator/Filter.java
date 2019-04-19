@@ -1,9 +1,11 @@
 package edu.brandeis.shangyuzhang.operator;
 
+import edu.brandeis.shangyuzhang.interfaces.RowsCounter;
+
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-public class Filter implements Iterator<int[]> {
+public class Filter implements Iterator<int[]>, RowsCounter {
 
     private Iterator<int[]> source;
     private Predicate pred;
@@ -35,7 +37,8 @@ public class Filter implements Iterator<int[]> {
         return row;
     }
 
-    public int getNumRows() {
+    @Override
+    public int getNumOfRows() {
         return numRows;
     }
 }

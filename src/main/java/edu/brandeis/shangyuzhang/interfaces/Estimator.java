@@ -1,4 +1,6 @@
-package edu.brandeis.shangyuzhang.model;
+package edu.brandeis.shangyuzhang.interfaces;
+
+import edu.brandeis.shangyuzhang.model.Relation;
 
 public interface Estimator {
 

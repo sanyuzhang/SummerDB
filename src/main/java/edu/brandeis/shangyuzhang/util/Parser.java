@@ -1,5 +1,6 @@
 package edu.brandeis.shangyuzhang.util;
 
+import edu.brandeis.shangyuzhang.interfaces.RowsCounter;
 import edu.brandeis.shangyuzhang.model.*;
 import edu.brandeis.shangyuzhang.operator.*;
 
@@ -117,13 +118,15 @@ public class Parser {
         StringBuilder joinedTableNames = new StringBuilder();
 
         long[] sums = null;
-        int numCols = 0;
+        int joinedNumOfCols = 0;
         Map<String, Integer> tableStartIndexMap = new HashMap();
+
         String firstTableName = joinOrder.substring(0, 1);
         FilterPredicate firstFilterPred = optimizer.getFilterPredicateByTableName(firstTableName);
+        int firstNumOfRows = 0;
 
         for (int i = 0; i < joinOrder.length(); i++) {
-            if (resultIterator instanceof BaseJoin && ((BaseJoin) resultIterator).isEmptyTable()) {
+            if (resultIterator != null && ((RowsCounter) resultIterator).getNumOfRows() == 0) {
                 sums = new long[sumElems.size()];
                 break;
             }
@@ -133,14 +136,15 @@ public class Parser {
             String currTableName = String.valueOf(joinOrder.charAt(i));
 
             Iterator currIterator = new Scan(currTableName);
-            int numRows = ((Scan) currIterator).getNumRows();
+            int currNumOfRows = ((RowsCounter) currIterator).getNumOfRows();
+            if (resultIterator == null) firstNumOfRows = currNumOfRows;
 
             Relation currRelation = database.getRelationByName(currTableName);
-            currIterator = new Project(currIterator, numRows, currRelation.getColsToKeep());
+            currIterator = new Project(currIterator, currNumOfRows, currRelation.getColsToKeep());
 
-            FilterPredicate filterPredicate = optimizer.getFilterPredicateByTableName(currTableName);
-            if (filterPredicate != null) {
-                currIterator = new Filter(currIterator, numRows, filterPredicate);
+            FilterPredicate currFilterPred = optimizer.getFilterPredicateByTableName(currTableName);
+            if (currFilterPred != null) {
+                currIterator = new Filter(currIterator, currNumOfRows, currFilterPred);
             }
 
             if (resultIterator != null) {
@@ -149,22 +153,22 @@ public class Parser {
                     if (isNaturalJoinable(joinedTableNames.toString(), currTableName, pair)) pairs.add(pair);
                 }
                 if (isLastJoin) {
-                    tableStartIndexMap.put(currTableName, numCols);
+                    tableStartIndexMap.put(currTableName, joinedNumOfCols);
                     sums = database.isLargeDataset() ?
-                            new MemSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate, sumElems).getSums() :
-                            new DiskSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate, sumElems).getSums();
+                            new MemSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, sumElems).getSums() :
+                            new DiskSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, sumElems).getSums();
                     break;
                 } else {
                     currIterator = database.isLargeDataset() ?
-                            new DiskJoin(resultIterator, currIterator, tableStartIndexMap, newTableName, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate) :
-                            new MemJoin(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate);
+                            new DiskJoin(resultIterator, currIterator, tableStartIndexMap, newTableName, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows) :
+                            new MemJoin(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows);
                 }
             }
             resultIterator = currIterator;
 
             joinedTableNames.append(currTableName);
-            tableStartIndexMap.put(currTableName, numCols);
-            numCols += database.getRelationByName(currTableName).getNumOfColsToKeep();
+            tableStartIndexMap.put(currTableName, joinedNumOfCols);
+            joinedNumOfCols += database.getRelationByName(currTableName).getNumOfColsToKeep();
         }
 
         StringBuilder result = new StringBuilder();

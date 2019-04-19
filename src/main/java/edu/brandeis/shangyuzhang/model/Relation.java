@@ -1,5 +1,7 @@
 package edu.brandeis.shangyuzhang.model;
 
+import edu.brandeis.shangyuzhang.interfaces.Estimator;
+
 import java.util.*;
 
 import static edu.brandeis.shangyuzhang.util.Constants.*;

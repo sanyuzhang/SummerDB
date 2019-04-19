@@ -1,5 +1,6 @@
 package edu.brandeis.shangyuzhang.operator;
 
+import edu.brandeis.shangyuzhang.interfaces.RowsCounter;
 import edu.brandeis.shangyuzhang.model.FilterPredicate;
 import edu.brandeis.shangyuzhang.model.NaturalJoinPredicate;
 import edu.brandeis.shangyuzhang.model.ParseElem;
@@ -8,7 +9,7 @@ import edu.brandeis.shangyuzhang.util.Database;
 import java.io.IOException;
 import java.util.*;
 
-public abstract class BaseJoin {
+public abstract class BaseJoin implements RowsCounter {
 
     protected int numRows;
 
@@ -17,9 +18,11 @@ public abstract class BaseJoin {
 
     protected String firstTableName;
     protected FilterPredicate firstTableFilterPredicate;
+    protected int firstTableNumOfRows;
 
     protected String currTableName;
     protected FilterPredicate currTableFilterPredicate;
+    protected int currTableNumOfRows;
 
     protected List<ParseElem[]> naturalJoinPairs;
     protected Map<String, Integer> tableStartIndexMap;
@@ -30,7 +33,8 @@ public abstract class BaseJoin {
     protected Database database = Database.getInstance();
 
     public BaseJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startIndexMap,
-                    List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, String currTable, FilterPredicate currFilterPred) {
+                    List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, int firstNumOfRows,
+                    String currTable, FilterPredicate currFilterPred, int currNumOfRows) {
         leftTable = leftIterator;
         rightTable = rightIterator;
 
@@ -38,15 +42,15 @@ public abstract class BaseJoin {
 
         firstTableName = firstTable;
         firstTableFilterPredicate = firstFilterPred;
+        firstTableNumOfRows = firstNumOfRows;
 
         currTableName = currTable;
         currTableFilterPredicate = currFilterPred;
+        currTableNumOfRows = currNumOfRows;
 
         naturalJoinPairs = pairs;
         isCartesianJoin = pairs.isEmpty();
     }
-
-    public abstract boolean isEmptyTable();
 
     public abstract void resetIterator() throws IOException;
 
@@ -133,7 +137,8 @@ public abstract class BaseJoin {
         }
     }
 
-    public int getNumRows() {
+    @Override
+    public int getNumOfRows() {
         return numRows;
     }
 
@@ -144,10 +149,10 @@ public abstract class BaseJoin {
             ((BaseJoin) leftTable).resetIterator();
         } else if (leftTable instanceof Filter) {
             leftTable = null;
-            leftTable = new Filter(new Project(new Scan(firstTableName), database.getRelationByName(firstTableName).getColsToKeep()), firstTableFilterPredicate);
+            leftTable = new Filter(new Project(new Scan(firstTableName), firstTableNumOfRows, database.getRelationByName(firstTableName).getColsToKeep()), firstTableNumOfRows, firstTableFilterPredicate);
         } else if (leftTable instanceof Project) {
             leftTable = null;
-            leftTable = new Project(new Scan(firstTableName), database.getRelationByName(firstTableName).getColsToKeep());
+            leftTable = new Project(new Scan(firstTableName), firstTableNumOfRows, database.getRelationByName(firstTableName).getColsToKeep());
         } else if (leftTable instanceof Scan) {
             leftTable = null;
             leftTable = new Scan(firstTableName);
@@ -157,10 +162,10 @@ public abstract class BaseJoin {
     protected void resetRightIterator() throws IOException {
         if (rightTable instanceof Filter) {
             rightTable = null;
-            rightTable = new Filter(new Project(new Scan(currTableName), database.getRelationByName(currTableName).getColsToKeep()), currTableFilterPredicate);
+            rightTable = new Filter(new Project(new Scan(currTableName), currTableNumOfRows, database.getRelationByName(currTableName).getColsToKeep()), currTableNumOfRows, currTableFilterPredicate);
         } else if (rightTable instanceof Project) {
             rightTable = null;
-            rightTable = new Project(new Scan(currTableName), database.getRelationByName(currTableName).getColsToKeep());
+            rightTable = new Project(new Scan(currTableName), currTableNumOfRows, database.getRelationByName(currTableName).getColsToKeep());
         } else if (rightTable instanceof Scan) {
             rightTable = null;
             rightTable = new Scan(currTableName);

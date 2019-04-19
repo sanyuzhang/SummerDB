@@ -11,15 +11,12 @@ public class MemJoin extends BaseJoin implements Iterator<int[]> {
     private List<int[]> rows;
 
     public MemJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                   List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, String currTable, FilterPredicate currFilterPred) throws IOException {
-        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, currTable, currFilterPred);
+                   List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, int firstNumOfRows,
+                   String currTable, FilterPredicate currFilterPred, int currNumOfRows) throws IOException {
+        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, firstNumOfRows, currTable, currFilterPred, currNumOfRows);
         currRow = 0;
         rows = new ArrayList();
         toJoinTable();
-    }
-
-    public boolean isEmptyTable() {
-        return numRows == 0;
     }
 
     @Override

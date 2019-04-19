@@ -1,8 +1,10 @@
 package edu.brandeis.shangyuzhang.operator;
 
+import edu.brandeis.shangyuzhang.interfaces.RowsCounter;
+
 import java.util.Iterator;
 
-public class Project implements Iterator<int[]> {
+public class Project implements Iterator<int[]>, RowsCounter {
 
     private Iterator<int[]> source;
     private int[] colsToKeep;
@@ -20,10 +22,6 @@ public class Project implements Iterator<int[]> {
         return source.hasNext();
     }
 
-    public int getNumRows() {
-        return numRows;
-    }
-
     @Override
     public int[] next() {
         int[] input = source.next();
@@ -31,5 +29,10 @@ public class Project implements Iterator<int[]> {
         for (int idx = 0; idx < colsToKeep.length; idx++)
             row[idx] = input[colsToKeep[idx]];
         return row;
+    }
+
+    @Override
+    public int getNumOfRows() {
+        return numRows;
     }
 }
