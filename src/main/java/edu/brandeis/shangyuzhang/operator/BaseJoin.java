@@ -139,7 +139,7 @@ public abstract class BaseJoin {
 
     protected abstract void addToResultRows(int[] leftRow, int[] rightRow);
 
-    private void resetLeftIterator() throws IOException {
+    protected void resetLeftIterator() throws IOException {
         if (leftTable instanceof BaseJoin) {
             ((BaseJoin) leftTable).resetIterator();
         } else if (leftTable instanceof Filter) {
@@ -154,7 +154,7 @@ public abstract class BaseJoin {
         }
     }
 
-    private void resetRightIterator() throws IOException {
+    protected void resetRightIterator() throws IOException {
         if (rightTable instanceof Filter) {
             rightTable = null;
             rightTable = new Filter(new Project(new Scan(currTableName), database.getRelationByName(currTableName).getColsToKeep()), currTableFilterPredicate);

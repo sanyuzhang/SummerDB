@@ -152,11 +152,9 @@ public class Parser {
                     sums = new Sum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate, sumElems).getSums();
                     break;
                 } else {
-                    if (database.isLargeDataset()) {
-                        currIterator = new DiskJoin(resultIterator, currIterator, tableStartIndexMap, newTableName, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate);
-                    } else {
-                        currIterator = new MemJoin(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate);
-                    }
+                    currIterator = database.isLargeDataset() ?
+                            new DiskJoin(resultIterator, currIterator, tableStartIndexMap, newTableName, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate) :
+                            new MemJoin(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, currTableName, filterPredicate);
                 }
             }
             resultIterator = currIterator;
