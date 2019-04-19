@@ -2,12 +2,12 @@ package edu.brandeis.shangyuzhang.model;
 
 public class NaturalJoinPredicate {
 
-    public int col1;
-    public int col2;
+    public int leftCol;
+    public int rightCol;
 
-    public NaturalJoinPredicate(int a, int b) {
-        col1 = a;
-        col2 = b;
+    public NaturalJoinPredicate(int l, int r) {
+        leftCol = l;
+        rightCol = r;
     }
 
 }

@@ -30,8 +30,8 @@ public class MemSum extends BaseJoin {
     }
 
     protected void toJoinTable() throws IOException {
-        if (isCartesianJoin) cartesianJoin();
-        else naturalJoin();
+        if (!isCartesianJoin) naturalJoin();
+        else cartesianJoin();
     }
 
     protected void addToResultRows(int[] leftRow, int[] rightRow) {

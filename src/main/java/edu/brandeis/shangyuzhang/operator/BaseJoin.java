@@ -84,7 +84,7 @@ public abstract class BaseJoin {
             ParseElem leftElem = naturalJoinPairs.get(i)[0], rightElem = naturalJoinPairs.get(i)[1];
             int leftCol = translateColByTableName(leftElem.table, leftElem.col);
             int rightCol = database.getRelationByName(rightElem.table).getNewByOldCol(rightElem.col);
-            naturalJoinPredicates[i] = new NaturalJoinPredicate(rightCol, leftCol);
+            naturalJoinPredicates[i] = new NaturalJoinPredicate(leftCol, rightCol);
             rightNewCols.add(rightCol);
         }
 
@@ -116,7 +116,7 @@ public abstract class BaseJoin {
                 for (int i = 0; i < naturalJoinPredicates.length; i++) {
                     if (i > 0 && rowsInBuffer.size() == 0) break;
                     NaturalJoinPredicate predicate = naturalJoinPredicates[i];
-                    int rightCol = predicate.col1, leftColValue = leftRow[predicate.col2];
+                    int rightCol = predicate.rightCol, leftColValue = leftRow[predicate.leftCol];
                     if (bufferHash.containsKey(rightCol) && bufferHash.get(rightCol).containsKey(leftColValue)) {
                         if (i == 0) rowsInBuffer = new HashSet(bufferHash.get(rightCol).get(leftColValue));
                         else rowsInBuffer.retainAll(bufferHash.get(rightCol).get(leftColValue));

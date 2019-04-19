@@ -37,8 +37,8 @@ public class MemJoin extends BaseJoin implements Iterator<int[]> {
     }
 
     protected void toJoinTable() throws IOException {
-        if (isCartesianJoin) cartesianJoin();
-        else naturalJoin();
+        if (!isCartesianJoin) naturalJoin();
+        else cartesianJoin();
         numRows = rows.size();
         resetIterator();
     }
