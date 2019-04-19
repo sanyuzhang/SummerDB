@@ -34,10 +34,10 @@ public class Sum extends BaseJoin {
         else naturalJoin();
     }
 
-    protected void addToResultRows(int[] memRow, int[] diskRow) {
+    protected void addToResultRows(int[] leftRow, int[] rightRow) {
         for (int i = 0; i < sumCols.length; i++) {
-            if (sumCols[i] < memRow.length) sums[i] += memRow[sumCols[i]];
-            else sums[i] += diskRow[sumCols[i] - memRow.length];
+            if (sumCols[i] < leftRow.length) sums[i] += leftRow[sumCols[i]];
+            else sums[i] += rightRow[sumCols[i] - leftRow.length];
         }
     }
 

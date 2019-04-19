@@ -43,11 +43,11 @@ public class MemJoin extends BaseJoin implements Iterator<int[]> {
         resetIterator();
     }
 
-    protected void addToResultRows(int[] memRow, int[] diskRow) {
-        int[] merged = new int[memRow.length + diskRow.length];
+    protected void addToResultRows(int[] leftRow, int[] rightRow) {
+        int[] merged = new int[leftRow.length + rightRow.length];
         for (int i = 0; i < merged.length; i++) {
-            if (i < memRow.length) merged[i] = memRow[i];
-            else merged[i] = diskRow[i - memRow.length];
+            if (i < leftRow.length) merged[i] = leftRow[i];
+            else merged[i] = rightRow[i - leftRow.length];
         }
         rows.add(merged);
     }

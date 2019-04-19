@@ -88,8 +88,8 @@ public class DiskJoin extends BaseJoin implements Iterator<int[]> {
         resetIterator();
     }
 
-    protected void addToResultRows(int[] memRow, int[] diskRow) {
-        mergeRow(memRow, diskRow);
+    protected void addToResultRows(int[] leftRow, int[] rightRow) {
+        mergeRow(leftRow, rightRow);
     }
 
     private void mergeRow(int[] memRow, int[] diskRow) {

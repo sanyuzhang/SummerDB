@@ -60,19 +60,19 @@ public abstract class BaseJoin {
         int[][] bufferRows = new int[BUFFER_SIZE][];
         int pointer = 0;
         while (true) {
-            boolean isDiskEnd = true;
+            boolean isRightEnd = true;
             while (rightTable.hasNext()) {
                 bufferRows[pointer++] = (int[]) rightTable.next();
                 if (pointer < BUFFER_SIZE) continue;
-                isDiskEnd = false;
+                isRightEnd = false;
                 break;
             }
             while (leftTable.hasNext()) {
-                int[] memRow = (int[]) leftTable.next();
-                for (int i = 0; i < pointer; i++) addToResultRows(memRow, bufferRows[i]);
+                int[] leftRow = (int[]) leftTable.next();
+                for (int i = 0; i < pointer; i++) addToResultRows(leftRow, bufferRows[i]);
             }
             pointer = 0;
-            if (isDiskEnd) break;
+            if (isRightEnd) break;
             resetLeftIterator();
         }
     }
@@ -93,7 +93,7 @@ public abstract class BaseJoin {
         int pointer = 0;
 
         while (true) {
-            boolean isDiskEnd = true;
+            boolean isRightEnd = true;
             while (rightTable.hasNext()) {
                 bufferRows[pointer] = (int[]) rightTable.next();
                 for (int i = 0; i < newColsOnDisk.size(); i++) {
@@ -105,18 +105,18 @@ public abstract class BaseJoin {
                 }
                 pointer++;
                 if (pointer < BUFFER_SIZE) continue;
-                isDiskEnd = false;
+                isRightEnd = false;
                 break;
             }
 
             while (leftTable.hasNext()) {
-                int[] memRow = (int[]) leftTable.next();
+                int[] leftRow = (int[]) leftTable.next();
 
                 Set<Integer> rowsInBuffer = new HashSet();
                 for (int i = 0; i < naturalJoinPredicates.length; i++) {
                     if (i > 0 && rowsInBuffer.size() == 0) break;
                     NaturalJoinPredicate predicate = naturalJoinPredicates[i];
-                    int diskCol = predicate.col1, targetValue = memRow[predicate.col2];
+                    int diskCol = predicate.col1, targetValue = leftRow[predicate.col2];
                     if (bufferHash.containsKey(diskCol) && bufferHash.get(diskCol).containsKey(targetValue)) {
                         if (i == 0) rowsInBuffer = new HashSet(bufferHash.get(diskCol).get(targetValue));
                         else rowsInBuffer.retainAll(bufferHash.get(diskCol).get(targetValue));
@@ -124,11 +124,11 @@ public abstract class BaseJoin {
                         rowsInBuffer.clear();
                     }
                 }
-                for (int rowNum : rowsInBuffer) addToResultRows(memRow, bufferRows[rowNum]);
+                for (int rowNum : rowsInBuffer) addToResultRows(leftRow, bufferRows[rowNum]);
             }
             bufferHash.clear();
             pointer = 0;
-            if (isDiskEnd) break;
+            if (isRightEnd) break;
             resetLeftIterator();
         }
     }
@@ -137,7 +137,7 @@ public abstract class BaseJoin {
         return numRows;
     }
 
-    protected abstract void addToResultRows(int[] memRow, int[] diskRow);
+    protected abstract void addToResultRows(int[] leftRow, int[] rightRow);
 
     private void resetLeftIterator() throws IOException {
         if (leftTable instanceof BaseJoin) {
