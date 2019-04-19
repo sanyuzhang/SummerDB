@@ -12,13 +12,16 @@ public class Scan implements Iterator<int[]> {
     private final int numCols;
     private int rowsRemaining;
 
+    private int numRows;
+
     private int pointer;
     private byte[] bytes;
 
     public Scan(String tb) throws IOException {
         dis = Catalog.openStream(tb, false);
         numCols = Catalog.numCols(tb);
-        rowsRemaining = Catalog.numRows(tb);
+        numRows = Catalog.numRows(tb);
+        rowsRemaining = numRows;
 
         pointer = 0;
         bytes = new byte[8 * 1024];
@@ -51,6 +54,10 @@ public class Scan implements Iterator<int[]> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public int getNumRows() {
+        return numRows;
     }
 
     public void closeStream() {

@@ -133,13 +133,14 @@ public class Parser {
             String currTableName = String.valueOf(joinOrder.charAt(i));
 
             Iterator currIterator = new Scan(currTableName);
+            int numRows = ((Scan) currIterator).getNumRows();
 
             Relation currRelation = database.getRelationByName(currTableName);
-            currIterator = new Project(currIterator, currRelation.getColsToKeep());
+            currIterator = new Project(currIterator, numRows, currRelation.getColsToKeep());
 
             FilterPredicate filterPredicate = optimizer.getFilterPredicateByTableName(currTableName);
             if (filterPredicate != null) {
-                currIterator = new Filter(currIterator, filterPredicate);
+                currIterator = new Filter(currIterator, numRows, filterPredicate);
             }
 
             if (resultIterator != null) {

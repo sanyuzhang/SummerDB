@@ -9,9 +9,12 @@ public class Filter implements Iterator<int[]> {
     private Predicate pred;
     private int[] row;
 
-    public Filter(Iterator<int[]> input, Predicate p) {
+    private int numRows;
+
+    public Filter(Iterator<int[]> input, int numRows, Predicate p) {
         this.source = input;
         this.pred = p;
+        this.numRows = numRows;
     }
 
     @Override
@@ -30,5 +33,9 @@ public class Filter implements Iterator<int[]> {
     @Override
     public int[] next() {
         return row;
+    }
+
+    public int getNumRows() {
+        return numRows;
     }
 }

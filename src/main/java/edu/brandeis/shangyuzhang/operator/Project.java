@@ -7,14 +7,21 @@ public class Project implements Iterator<int[]> {
     private Iterator<int[]> source;
     private int[] colsToKeep;
 
-    public Project(Iterator<int[]> input, int[] keep) {
+    private int numRows;
+
+    public Project(Iterator<int[]> input, int numRows, int[] keep) {
         this.source = input;
         this.colsToKeep = keep;
+        this.numRows = numRows;
     }
 
     @Override
     public boolean hasNext() {
         return source.hasNext();
+    }
+
+    public int getNumRows() {
+        return numRows;
     }
 
     @Override
