@@ -152,7 +152,7 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableToStartColMap.put(currTableName, numCols);
-                    sums = new MemJoin(resultIterator, currIterator, tableToStartColMap, firstTableName, pairs, firstFilterPred, sumElems).getSums();
+                    sums = new Sum(resultIterator, currIterator, tableToStartColMap, firstTableName, pairs, firstFilterPred, sumElems).getSums();
                     break;
                 } else {
                     if (database.isLargeDataset()) {

@@ -39,13 +39,7 @@ public class DiskJoin implements Iterator<int[]> {
     private Database database = Database.getInstance();
 
     public DiskJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                    String newTb, String rightTb, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
-        initializeJoin(leftIterator, rightIterator, startColMap, newTb, rightTb, pairs, firstFilterPred);
-        toJoinTable();
-    }
-
-    private void initializeJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                                String newTb, String firstTable, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
+                    String newTb, String firstTable, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
         filename = database.getRootPath() + newTb + SUFFIX;
 
         memTable = leftIterator;
@@ -60,6 +54,7 @@ public class DiskJoin implements Iterator<int[]> {
         isCartesianJoin = pairs.isEmpty();
 
         dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
+        toJoinTable();
     }
 
     public void closeStream() {

@@ -1,15 +1,14 @@
 package edu.brandeis.shangyuzhang.operator;
 
-import edu.brandeis.shangyuzhang.model.*;
+import edu.brandeis.shangyuzhang.model.FilterPredicate;
+import edu.brandeis.shangyuzhang.model.NaturalJoinPredicate;
+import edu.brandeis.shangyuzhang.model.ParseElem;
 import edu.brandeis.shangyuzhang.util.Database;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.*;
 
-public class MemJoin implements Iterator<int[]> {
-
-    private int currRow;
-    private List<int[]> rows;
+public class Sum {
 
     private Iterator diskTable;
     private Iterator memTable;
@@ -22,16 +21,17 @@ public class MemJoin implements Iterator<int[]> {
 
     private boolean isCartesianJoin;
 
+    private List<ParseElem> sumElems;
+    private long[] sums;
+    private int[] sumCols;
+
     private static final int BUFFER_SIZE = 1024 * 32;
     private Database database = Database.getInstance();
 
-    public MemJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                   String firstTable, List<ParseElem[]> pairs, FilterPredicate firstFilterPred) throws IOException {
+    public Sum(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
+               String firstTable, List<ParseElem[]> pairs, FilterPredicate firstFilterPred, List<ParseElem> sumElms) throws IOException {
         memTable = leftIterator;
         diskTable = rightIterator;
-
-        currRow = 0;
-        rows = new ArrayList();
 
         tableToStartColMap = startColMap;
 
@@ -40,25 +40,19 @@ public class MemJoin implements Iterator<int[]> {
 
         naturalJoinPairs = pairs;
         isCartesianJoin = pairs.isEmpty();
+
+        initSumTools(sumElms);
         toJoinTable();
     }
 
-    public boolean isEmptyTable() {
-        return rows.size() == 0;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return currRow < rows.size();
-    }
-
-    @Override
-    public int[] next() {
-        return rows.get(currRow++);
-    }
-
-    public void resetIterator() {
-        currRow = 0;
+    private void initSumTools(List<ParseElem> sumElms) {
+        sumElems = sumElms;
+        sums = new long[sumElems.size()];
+        sumCols = new int[sumElems.size()];
+        for (int i = 0; i < sumCols.length; i++) {
+            ParseElem elem = sumElems.get(i);
+            sumCols[i] = translateColByTableName(elem.table, elem.col);
+        }
     }
 
     private int translateColByTableName(String tableName, int col) {
@@ -68,7 +62,6 @@ public class MemJoin implements Iterator<int[]> {
     private void toJoinTable() throws IOException {
         if (isCartesianJoin) cartesianJoin();
         else naturalJoin();
-        resetIterator();
     }
 
     private void cartesianJoin() throws IOException {
@@ -149,12 +142,14 @@ public class MemJoin implements Iterator<int[]> {
     }
 
     private void addToResultRows(int[] memRow, int[] diskRow) {
-        int[] merged = new int[memRow.length + diskRow.length];
-        for (int i = 0; i < merged.length; i++) {
-            if (i < memRow.length) merged[i] = memRow[i];
-            else merged[i] = diskRow[i - memRow.length];
+        for (int i = 0; i < sumCols.length; i++) {
+            if (sumCols[i] < memRow.length) sums[i] += memRow[sumCols[i]];
+            else sums[i] += diskRow[sumCols[i] - memRow.length];
         }
-        rows.add(merged);
+    }
+
+    public long[] getSums() {
+        return sums;
     }
 
     private void resetRightIterator() throws IOException {
