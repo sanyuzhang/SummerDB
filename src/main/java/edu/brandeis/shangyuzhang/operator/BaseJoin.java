@@ -60,24 +60,49 @@ public abstract class BaseJoin implements RowsCounter {
 
     protected abstract void toJoinTable() throws IOException;
 
+    private boolean isRightTableBufferrable() {
+        int leftSize = ((RowsCounter) leftTable).getNumOfRows();
+        int rightSize = ((RowsCounter) rightTable).getNumOfRows();
+        return !database.isLargeDataset() || leftSize >= rightSize;
+    }
+
     protected void cartesianJoin() throws IOException {
         int[][] bufferRows = new int[BUFFER_SIZE][];
         int pointer = 0;
-        while (true) {
-            boolean isRightEnd = true;
-            while (rightTable.hasNext()) {
-                bufferRows[pointer++] = (int[]) rightTable.next();
-                if (pointer < BUFFER_SIZE) continue;
-                isRightEnd = false;
-                break;
+        if (isRightTableBufferrable()) {
+            while (true) {
+                boolean isRightEnd = true;
+                while (rightTable.hasNext()) {
+                    bufferRows[pointer++] = (int[]) rightTable.next();
+                    if (pointer < BUFFER_SIZE) continue;
+                    isRightEnd = false;
+                    break;
+                }
+                while (leftTable.hasNext()) {
+                    int[] leftRow = (int[]) leftTable.next();
+                    for (int i = 0; i < pointer; i++) addToResultRows(leftRow, bufferRows[i]);
+                }
+                pointer = 0;
+                if (isRightEnd) break;
+                resetLeftIterator();
             }
-            while (leftTable.hasNext()) {
-                int[] leftRow = (int[]) leftTable.next();
-                for (int i = 0; i < pointer; i++) addToResultRows(leftRow, bufferRows[i]);
+        } else {
+            while (true) {
+                boolean isLeftEnd = true;
+                while (leftTable.hasNext()) {
+                    bufferRows[pointer++] = (int[]) leftTable.next();
+                    if (pointer < BUFFER_SIZE) continue;
+                    isLeftEnd = false;
+                    break;
+                }
+                while (rightTable.hasNext()) {
+                    int[] rightRow = (int[]) rightTable.next();
+                    for (int i = 0; i < pointer; i++) addToResultRows(bufferRows[i], rightRow);
+                }
+                pointer = 0;
+                if (isLeftEnd) break;
+                resetRightIterator();
             }
-            pointer = 0;
-            if (isRightEnd) break;
-            resetLeftIterator();
         }
     }
 
@@ -98,10 +123,7 @@ public abstract class BaseJoin implements RowsCounter {
         Map<Integer, Map<Integer, Set<Integer>>> bufferHash = new HashMap(); // k: col, v: map:{ k: colValue, v: list of row_numbers}
         int pointer = 0;
 
-        int leftSize = ((RowsCounter) leftTable).getNumOfRows();
-        int rightSize = ((RowsCounter) rightTable).getNumOfRows();
-
-        if (!database.isLargeDataset() || leftSize >= rightSize) {
+        if (isRightTableBufferrable()) {
             while (true) {
                 boolean isRightEnd = true;
                 while (rightTable.hasNext()) {
@@ -121,7 +143,6 @@ public abstract class BaseJoin implements RowsCounter {
 
                 while (leftTable.hasNext()) {
                     int[] leftRow = (int[]) leftTable.next();
-
                     Set<Integer> rowsInBuffer = new HashSet();
                     for (int i = 0; i < naturalJoinPredicates.length; i++) {
                         if (i > 0 && rowsInBuffer.size() == 0) break;
