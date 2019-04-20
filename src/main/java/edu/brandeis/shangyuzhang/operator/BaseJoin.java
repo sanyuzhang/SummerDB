@@ -78,6 +78,7 @@ public abstract class BaseJoin implements RowsCounter {
                     isRightEnd = false;
                     break;
                 }
+                if (pointer == 0) break;
                 while (leftTable.hasNext()) {
                     int[] leftRow = (int[]) leftTable.next();
                     for (int i = 0; i < pointer; i++) addToResultRows(leftRow, bufferRows[i]);
@@ -95,6 +96,7 @@ public abstract class BaseJoin implements RowsCounter {
                     isLeftEnd = false;
                     break;
                 }
+                if (pointer == 0) break;
                 while (rightTable.hasNext()) {
                     int[] rightRow = (int[]) rightTable.next();
                     for (int i = 0; i < pointer; i++) addToResultRows(bufferRows[i], rightRow);
@@ -107,21 +109,19 @@ public abstract class BaseJoin implements RowsCounter {
     }
 
     protected void naturalJoin() throws IOException {
-        List<Integer> leftNewCols = new ArrayList();
-        List<Integer> rightNewCols = new ArrayList();
+        List<Integer> leftNewCols = new ArrayList(), rightNewCols = new ArrayList();
         NaturalJoinPredicate[] naturalJoinPredicates = new NaturalJoinPredicate[naturalJoinPairs.size()];
         for (int i = 0; i < naturalJoinPairs.size(); i++) {
             ParseElem leftElem = naturalJoinPairs.get(i)[0], rightElem = naturalJoinPairs.get(i)[1];
-            int leftCol = translateColByTableName(leftElem.table, leftElem.col);
-            int rightCol = database.getRelationByName(rightElem.table).getNewByOldCol(rightElem.col);
+            int leftCol = translateColByTableName(leftElem.table, leftElem.col), rightCol = database.getRelationByName(rightElem.table).getNewByOldCol(rightElem.col);
             naturalJoinPredicates[i] = new NaturalJoinPredicate(leftCol, rightCol);
             leftNewCols.add(leftCol);
             rightNewCols.add(rightCol);
         }
 
+        int pointer = 0;
         int[][] bufferRows = new int[BUFFER_SIZE][];
         Map<Integer, Map<Integer, Set<Integer>>> bufferHash = new HashMap(); // k: col, v: map:{ k: colValue, v: list of row_numbers}
-        int pointer = 0;
 
         if (isRightTableBufferrable()) {
             while (true) {
@@ -140,7 +140,7 @@ public abstract class BaseJoin implements RowsCounter {
                     isRightEnd = false;
                     break;
                 }
-
+                if (pointer == 0) break;
                 while (leftTable.hasNext()) {
                     int[] leftRow = (int[]) leftTable.next();
                     Set<Integer> rowsInBuffer = new HashSet();
@@ -179,7 +179,7 @@ public abstract class BaseJoin implements RowsCounter {
                     isLeftEnd = false;
                     break;
                 }
-
+                if (pointer == 0) break;
                 while (rightTable.hasNext()) {
                     int[] rightRow = (int[]) rightTable.next();
 
