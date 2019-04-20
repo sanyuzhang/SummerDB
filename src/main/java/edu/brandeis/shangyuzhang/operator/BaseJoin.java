@@ -109,56 +109,47 @@ public abstract class BaseJoin implements RowsCounter {
     }
 
     protected void naturalJoin() throws IOException {
-        List<Integer> leftNewCols = new ArrayList(), rightNewCols = new ArrayList();
         NaturalJoinPredicate[] naturalJoinPredicates = new NaturalJoinPredicate[naturalJoinPairs.size()];
         for (int i = 0; i < naturalJoinPairs.size(); i++) {
             ParseElem leftElem = naturalJoinPairs.get(i)[0], rightElem = naturalJoinPairs.get(i)[1];
             int leftCol = translateColByTableName(leftElem.table, leftElem.col), rightCol = database.getRelationByName(rightElem.table).getNewByOldCol(rightElem.col);
             naturalJoinPredicates[i] = new NaturalJoinPredicate(leftCol, rightCol);
-            leftNewCols.add(leftCol);
-            rightNewCols.add(rightCol);
         }
 
-        int pointer = 0;
-        int[][] bufferRows = new int[BUFFER_SIZE][];
-        Map<Integer, Map<Integer, Set<Integer>>> bufferHash = new HashMap(); // k: col, v: map:{ k: colValue, v: list of row_numbers}
-
+        List<int[]> bufferRows = new ArrayList(BUFFER_SIZE + 1);
         if (isRightTableBufferrable()) {
             while (true) {
                 boolean isRightEnd = true;
                 while (rightTable.hasNext()) {
-                    bufferRows[pointer] = (int[]) rightTable.next();
-                    for (int i = 0; i < rightNewCols.size(); i++) {
-                        int rightCol = rightNewCols.get(i);
-                        int rightColValue = bufferRows[pointer][rightCol];
-                        bufferHash.putIfAbsent(rightCol, new HashMap());
-                        bufferHash.get(rightCol).putIfAbsent(rightColValue, new HashSet());
-                        bufferHash.get(rightCol).get(rightColValue).add(pointer);
-                    }
-                    pointer++;
-                    if (pointer < BUFFER_SIZE) continue;
+                    bufferRows.add((int[]) rightTable.next());
+                    if (bufferRows.size() < BUFFER_SIZE) continue;
                     isRightEnd = false;
                     break;
                 }
-                if (pointer == 0) break;
+                if (bufferRows.size() == 0) break;
+                Collections.sort(bufferRows, Comparator.comparingInt(o -> o[naturalJoinPredicates[0].rightCol]));
                 while (leftTable.hasNext()) {
                     int[] leftRow = (int[]) leftTable.next();
-                    Set<Integer> rowsInBuffer = new HashSet();
-                    for (int i = 0; i < naturalJoinPredicates.length; i++) {
-                        if (i > 0 && rowsInBuffer.size() == 0) break;
+                    List<int[]> candidateRows = new ArrayList();
+                    int rightCol = naturalJoinPredicates[0].rightCol, leftColValue = leftRow[naturalJoinPredicates[0].leftCol];
+                    int firstRowId = binarySearchOnCol(bufferRows, rightCol, leftColValue);
+                    while (firstRowId < bufferRows.size() && bufferRows.get(firstRowId)[rightCol] == leftColValue)
+                        candidateRows.add(bufferRows.get(firstRowId++));
+                    for (int i = 1; i < naturalJoinPredicates.length; i++) {
                         NaturalJoinPredicate predicate = naturalJoinPredicates[i];
-                        int rightCol = predicate.rightCol, leftColValue = leftRow[predicate.leftCol];
-                        if (bufferHash.containsKey(rightCol) && bufferHash.get(rightCol).containsKey(leftColValue)) {
-                            if (i == 0) rowsInBuffer = new HashSet(bufferHash.get(rightCol).get(leftColValue));
-                            else rowsInBuffer.retainAll(bufferHash.get(rightCol).get(leftColValue));
-                        } else if (i > 0) {
-                            rowsInBuffer.clear();
-                        }
+                        rightCol = predicate.rightCol;
+                        leftColValue = leftRow[predicate.leftCol];
+                        int finalRightCol = rightCol;
+                        Collections.sort(candidateRows, Comparator.comparingInt(o -> o[finalRightCol]));
+                        firstRowId = binarySearchOnCol(candidateRows, rightCol, leftColValue);
+                        List<int[]> newCandidateRows = new ArrayList();
+                        while (firstRowId < candidateRows.size() && candidateRows.get(firstRowId)[rightCol] == leftColValue)
+                            newCandidateRows.add(candidateRows.get(firstRowId++));
+                        candidateRows = newCandidateRows;
                     }
-                    for (int rowNum : rowsInBuffer) addToResultRows(leftRow, bufferRows[rowNum]);
+                    for (int i = 0; i < candidateRows.size(); i++) addToResultRows(leftRow, candidateRows.get(i));
                 }
-                bufferHash.clear();
-                pointer = 0;
+                bufferRows.clear();
                 if (isRightEnd) break;
                 resetLeftIterator();
             }
@@ -166,43 +157,54 @@ public abstract class BaseJoin implements RowsCounter {
             while (true) {
                 boolean isLeftEnd = true;
                 while (leftTable.hasNext()) {
-                    bufferRows[pointer] = (int[]) leftTable.next();
-                    for (int i = 0; i < leftNewCols.size(); i++) {
-                        int leftCol = leftNewCols.get(i);
-                        int leftColValue = bufferRows[pointer][leftCol];
-                        bufferHash.putIfAbsent(leftCol, new HashMap());
-                        bufferHash.get(leftCol).putIfAbsent(leftColValue, new HashSet());
-                        bufferHash.get(leftCol).get(leftColValue).add(pointer);
-                    }
-                    pointer++;
-                    if (pointer < BUFFER_SIZE) continue;
+                    bufferRows.add((int[]) leftTable.next());
+                    if (bufferRows.size() < BUFFER_SIZE) continue;
                     isLeftEnd = false;
                     break;
                 }
-                if (pointer == 0) break;
+                if (bufferRows.size() == 0) break;
+                Collections.sort(bufferRows, Comparator.comparingInt(o -> o[naturalJoinPredicates[0].leftCol]));
                 while (rightTable.hasNext()) {
                     int[] rightRow = (int[]) rightTable.next();
-
-                    Set<Integer> rowsInBuffer = new HashSet();
-                    for (int i = 0; i < naturalJoinPredicates.length; i++) {
-                        if (i > 0 && rowsInBuffer.size() == 0) break;
+                    List<int[]> candidateRows = new ArrayList();
+                    int leftCol = naturalJoinPredicates[0].leftCol, rightColValue = rightRow[naturalJoinPredicates[0].rightCol];
+                    int firstRowId = binarySearchOnCol(bufferRows, leftCol, rightColValue);
+                    while (firstRowId < bufferRows.size() && bufferRows.get(firstRowId)[leftCol] == rightColValue)
+                        candidateRows.add(bufferRows.get(firstRowId++));
+                    for (int i = 1; i < naturalJoinPredicates.length; i++) {
                         NaturalJoinPredicate predicate = naturalJoinPredicates[i];
-                        int leftCol = predicate.leftCol, rightColValue = rightRow[predicate.rightCol];
-                        if (bufferHash.containsKey(leftCol) && bufferHash.get(leftCol).containsKey(rightColValue)) {
-                            if (i == 0) rowsInBuffer = new HashSet(bufferHash.get(leftCol).get(rightColValue));
-                            else rowsInBuffer.retainAll(bufferHash.get(leftCol).get(rightColValue));
-                        } else if (i > 0) {
-                            rowsInBuffer.clear();
-                        }
+                        leftCol = predicate.leftCol;
+                        rightColValue = rightRow[predicate.rightCol];
+                        int finalLeftCol = leftCol;
+                        Collections.sort(candidateRows, Comparator.comparingInt(o -> o[finalLeftCol]));
+                        firstRowId = binarySearchOnCol(candidateRows, leftCol, rightColValue);
+                        List<int[]> newCandidateRows = new ArrayList();
+                        while (firstRowId < candidateRows.size() && candidateRows.get(firstRowId)[leftCol] == rightColValue)
+                            newCandidateRows.add(candidateRows.get(firstRowId++));
+                        candidateRows = newCandidateRows;
                     }
-                    for (int rowNum : rowsInBuffer) addToResultRows(bufferRows[rowNum], rightRow);
+                    for (int i = 0; i < candidateRows.size(); i++) addToResultRows(candidateRows.get(i), rightRow);
                 }
-                bufferHash.clear();
-                pointer = 0;
+                bufferRows.clear();
                 if (isLeftEnd) break;
                 resetRightIterator();
             }
         }
+    }
+
+    private int binarySearchOnCol(List<int[]> bufferRows, int col, int target) {
+        int l = 0, r = bufferRows.size() - 1;
+        while (l + 1 < r) {
+            int m = (l + r) / 2;
+            if (bufferRows.get(m)[col] < target) {
+                l = m;
+            } else {
+                r = m;
+            }
+        }
+        if (bufferRows.get(l)[col] == target) return l;
+        if (bufferRows.get(r)[col] == target) return r;
+        return bufferRows.size();
     }
 
     @Override
