@@ -136,6 +136,7 @@ public abstract class BaseJoin implements RowsCounter {
                     while (firstRowId < bufferRows.size() && bufferRows.get(firstRowId)[rightCol] == leftColValue)
                         candidateRows.add(bufferRows.get(firstRowId++));
                     for (int i = 1; i < naturalJoinPredicates.length; i++) {
+                        if (candidateRows.size() == 0) break;
                         NaturalJoinPredicate predicate = naturalJoinPredicates[i];
                         rightCol = predicate.rightCol;
                         leftColValue = leftRow[predicate.leftCol];
@@ -172,6 +173,7 @@ public abstract class BaseJoin implements RowsCounter {
                     while (firstRowId < bufferRows.size() && bufferRows.get(firstRowId)[leftCol] == rightColValue)
                         candidateRows.add(bufferRows.get(firstRowId++));
                     for (int i = 1; i < naturalJoinPredicates.length; i++) {
+                        if (candidateRows.size() == 0) break;
                         NaturalJoinPredicate predicate = naturalJoinPredicates[i];
                         leftCol = predicate.leftCol;
                         rightColValue = rightRow[predicate.rightCol];
