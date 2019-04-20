@@ -23,7 +23,7 @@ public class Main {
     private static final boolean isLocal = false;
 
     private static TestDataSet testDataSet;
-    private static final String TARGET_DATA_SET = Constants.XXSMALL;
+    private static final String TARGET_DATA_SET = Constants.LARGE_TWO;
 
     private static void load(String filePaths) {
         database.setLargeDataset(!filePaths.contains("data/x")
