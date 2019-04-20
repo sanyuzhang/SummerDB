@@ -24,6 +24,7 @@ public class Parser {
     private static final String FROM = "FROM";
     private static final String WHERE = "WHERE";
     private static final String AND = "AND";
+    private static final String END = "END";
 
     private String[] relations;
     private Optimizer optimizer;
@@ -80,6 +81,7 @@ public class Parser {
 
     private void parsePredicate(String line) {
         line = line.replaceFirst(AND, EMPTY);
+        line = line.replaceFirst(END, AND); // TODO Ryan Bug
         line = cleanSqlForParsing(line, new String[]{SEMICOLON, SPACES});
         line = line.toUpperCase();
         for (String elem : line.split(AND)) {
@@ -110,7 +112,7 @@ public class Parser {
 
     public void optimize() {
         optimizer.initBestMap();
-        joinOrder = optimizer.computeBest(true);
+        joinOrder = optimizer.computeBest();
     }
 
     public void startEngine() throws IOException {
@@ -154,12 +156,10 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableStartIndexMap.put(currTableName, joinedNumOfCols);
-                    sums = database.isLargeDataset() ?
-                            new MemSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, sumElems).getSums() :
-                            new DiskSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, sumElems).getSums();
+                    sums = new Sum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, sumElems).getSums();
                     break;
                 } else {
-                    currIterator = database.isLargeDataset() ?
+                    currIterator = database.isDiskJoin() ?
                             new DiskJoin(resultIterator, currIterator, tableStartIndexMap, newTableName, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows) :
                             new MemJoin(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows);
                 }

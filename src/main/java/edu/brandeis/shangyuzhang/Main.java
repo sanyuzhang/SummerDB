@@ -26,8 +26,7 @@ public class Main {
     private static final String TARGET_DATA_SET = Constants.LARGE_TWO;
 
     private static void load(String filePaths) {
-        database.setLargeDataset(!filePaths.contains("data/x")
-                && !filePaths.contains("data/s") && !filePaths.contains("data/m"));
+        database.setDataPath(filePaths);
         String[] tables = filePaths.split(COMMA);
         for (String table : tables) {
             Loader loader = new Loader(table);
@@ -68,7 +67,6 @@ public class Main {
             testDataSet = factory.createDataSet(TARGET_DATA_SET);
             load(testDataSet.getFilePath());
             query();
-            cleanFile();
         } else {
             Scanner scanner = new Scanner(System.in);
             String inputPaths = scanner.nextLine();
@@ -88,6 +86,7 @@ public class Main {
             }
             scanner.close();
         }
+        cleanFile();
     }
 
 }

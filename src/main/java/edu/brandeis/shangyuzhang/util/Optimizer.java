@@ -32,10 +32,6 @@ public class Optimizer {
         return filterPredicates.get(tb);
     }
 
-    public Map<String, FilterPredicate> getFilterPredicates() {
-        return filterPredicates;
-    }
-
     public List<ParseElem[]> getNaturalJoinPairs() {
         return naturalJoinPairs;
     }
@@ -115,39 +111,7 @@ public class Optimizer {
         return cardinality;
     }
 
-    public String computeNaiveBest() {
-        StringBuilder order = new StringBuilder();
-        PriorityQueue orderQueue = new PriorityQueue(tables.length, (Comparator<Relation>) (r1, r2) -> r1.getEstimatedCardinality() > r2.getEstimatedCardinality() ? 1 : -1);
-
-        for (String tableName : tables) {
-            double cardinality = 0f;
-            Relation relation = database.getRelationByName(tableName);
-            if (filterPredicates.containsKey(relation.getTableName())) {
-                FilterPredicate p = filterPredicates.get(relation.getTableName());
-                int size = p.operators.size();
-                for (int i = 0; i < size; i++) {
-                    String operator = p.operators.get(i);
-                    int column = p.columns.get(i);
-                    int value = p.values.get(i);
-                    if (cardinality == 0) { // first time
-                        cardinality = relation.getCardinal(operator, column, value);
-                    } else {
-                        cardinality = cardinality * relation.getCardinal(operator, column, value) / relation.getNumRows();
-                    }
-                }
-            } else {
-                cardinality = relation.getNumRows();
-            }
-            relation.setEstimatedCardinality(cardinality);
-            orderQueue.offer(relation);
-            System.out.println(tableName + " - " + cardinality);
-        }
-        while (!orderQueue.isEmpty()) order.append(((Relation) orderQueue.poll()).getTableName());
-        return order.toString();
-    }
-
-    public String computeBest(boolean isSelinger) {
-        if (!isSelinger) return computeNaiveBest();
+    public String computeBest() {
         StringBuilder rels = new StringBuilder();
         for (String s : tables) rels.append(s);
         return computeBest(rels.toString());
@@ -176,6 +140,14 @@ public class Optimizer {
         if (curr == null || curr.isEmpty()) return 1;
         double cardinal1 = calculateNaturalJoinCardinal(curr);
         double cardinal2 = calculateNaturalJoinCardinal(order);
+        if (cardinal1 == cardinal2 && database.isReorder()) {
+            for (int i = 0; i < curr.length(); i++) {
+                double size1 = database.getRelationByName(curr.substring(i, i + 1)).getEstimatedCardinality();
+                double size2 = database.getRelationByName(order.substring(i, i + 1)).getEstimatedCardinality();
+                if (size1 == size2) continue;
+                return size1 - size2;
+            }
+        }
         return cardinal1 - cardinal2;
     }
 
@@ -212,7 +184,10 @@ public class Optimizer {
             cardinalMap.put(pairKey, cardinality);
             return cardinality;
         }
-        double numRows1 = r1.getNumRows(), numRows2 = r2.getNumRows();
+//        double numRows1 = Math.min(r1.getNumRows(), r1.getEstimatedCardinality());
+//        double numRows2 = Math.min(r2.getNumRows(), r2.getEstimatedCardinality());
+        double numRows1 = r1.getNumRows();
+        double numRows2 = r2.getNumRows();
         double cardinality = numRows2 > Double.MAX_VALUE / numRows1 ? Double.MAX_VALUE : numRows1 * numRows2;
         cardinalMap.put(pairKey, cardinality);
         return cardinality;

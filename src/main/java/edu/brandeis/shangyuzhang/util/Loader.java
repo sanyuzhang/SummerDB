@@ -55,7 +55,7 @@ public class Loader {
             CharBuffer cb2 = CharBuffer.allocate(4 * 1024);
 
             int colIndex = 0, numRows = 0;
-            Relation relation = new Relation(newPath, tableName, numCols, numRows);
+            Relation relation = new Relation(newPath, tableName, numCols);
 
             while (fr.read(cb1) != -1) {
                 cb1.flip();
@@ -90,8 +90,8 @@ public class Loader {
             dos.close();
 
             relation.setNumRows(numRows);
+            relation.initUniqueNumOfCols();
             database.addRelation(relation);
-
         } catch (IOException e) {
             e.printStackTrace();
         }

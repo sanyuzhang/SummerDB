@@ -6,15 +6,15 @@ import edu.brandeis.shangyuzhang.model.ParseElem;
 import java.io.IOException;
 import java.util.*;
 
-public class DiskSum extends BaseJoin {
+public class Sum extends BaseJoin {
 
     private List<ParseElem> sumElems;
     private long[] sums;
     private int[] sumCols;
 
-    public DiskSum(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
-                   List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, int firstNumOfRows,
-                   String currTable, FilterPredicate currFilterPred, int currNumOfRows, List<ParseElem> sumElms) throws IOException {
+    public Sum(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
+               List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, int firstNumOfRows,
+               String currTable, FilterPredicate currFilterPred, int currNumOfRows, List<ParseElem> sumElms) throws IOException {
         super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, firstNumOfRows, currTable, currFilterPred, currNumOfRows);
         initSumTools(sumElms);
         toJoinTable();

@@ -14,6 +14,7 @@ public class Relation implements Estimator {
     private int numRows;
     private int[] minCols;
     private int[] maxCols;
+    private int[] uniqueNumCols;
 
     private int[] colsToKeep;
     private Set<Integer> colsToKeepSet;
@@ -21,12 +22,10 @@ public class Relation implements Estimator {
 
     private double estimatedCardinality;
 
-    public Relation(String path, String tn, int c, int r) {
+    public Relation(String path, String tn, int c) {
         filePath = path;
         tableName = tn;
         numCols = c;
-        numRows = r;
-        estimatedCardinality = r;
 
         minCols = new int[numCols];
         Arrays.fill(minCols, Integer.MAX_VALUE);
@@ -34,17 +33,26 @@ public class Relation implements Estimator {
         maxCols = new int[numCols];
         Arrays.fill(maxCols, Integer.MIN_VALUE);
 
+        uniqueNumCols = new int[numCols];
+
         colsToKeepSet = new HashSet();
+    }
+
+    public void initUniqueNumOfCols() {
+        for (int i = 0; i < numCols; i++)
+            uniqueNumCols[i] = Math.min(numRows, maxCols[i] - minCols[i]);
     }
 
     public void resetOnNextQuery() {
         colsToKeep = null;
         colsToKeepSet.clear();
         oldNewColsMapping.clear();
+        estimatedCardinality = numRows;
     }
 
     public void setNumRows(int numRows) {
         this.numRows = numRows;
+        this.estimatedCardinality = numRows;
     }
 
     public void initOldNewColsMapping() {
@@ -98,16 +106,16 @@ public class Relation implements Estimator {
         return colsToKeep.length;
     }
 
-    public Set<Integer> getColsToKeepSet() {
-        return colsToKeepSet;
-    }
-
     public String getFilePath() {
         return filePath;
     }
 
     public int getNewByOldCol(int oldCol) {
         return oldNewColsMapping.get(oldCol);
+    }
+
+    public int getUniqueNumCol(int oldCol) {
+        return uniqueNumCols[oldCol];
     }
 
     @Override
@@ -124,8 +132,10 @@ public class Relation implements Estimator {
 
     @Override
     public double getCardinalEqualTo(int oldCol) {
+//        return 1.0 * numRows / uniqueNumCols[oldCol];
         return 1.0 * numRows / numRows;
     }
+
 
     @Override
     public double getCardinalLesserThan(int oldCol, int value) {
@@ -145,7 +155,13 @@ public class Relation implements Estimator {
 
     @Override
     public double getCardinalNaturalJoin(int oldCol1, Relation r2, int oldCol2) {
-        return 1.0 * this.numRows * r2.getNumRows() * Math.min(numRows, r2.getNumRows()) / numRows / r2.getNumRows();
+//        double r1Size = Math.min(uniqueNumCols[oldCol1], estimatedCardinality);
+//        double r2Size = Math.min(r2.getUniqueNumCol(oldCol2), r2.getEstimatedCardinality());
+//        double r1Size = uniqueNumCols[oldCol1];
+//        double r2Size = r2.getUniqueNumCol(oldCol2);
+        double r1Size = numRows;
+        double r2Size = r2.getNumRows();
+        return 1.0 * this.numRows * r2.getNumRows() * Math.min(r1Size, r2Size) / r1Size / r2Size;
     }
 
 }

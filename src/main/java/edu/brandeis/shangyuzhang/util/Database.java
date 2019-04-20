@@ -10,7 +10,8 @@ public class Database {
     private static String rootPath;
     private static Map<String, Relation> relations;
 
-    private boolean isLargeDataset;
+    private static boolean isDiskJoin;
+    private static boolean isReorder;
 
     private Database() {
         relations = new HashMap<>();
@@ -51,12 +52,25 @@ public class Database {
         return relations.get(tableName).getNumRows();
     }
 
-    public boolean isLargeDataset() {
-        return isLargeDataset;
+    public boolean isDiskJoin() {
+        return isDiskJoin;
     }
 
-    public void setLargeDataset(boolean largeDataset) {
-        isLargeDataset = largeDataset;
+    public static void setDiskJoin(boolean diskJoin) {
+        isDiskJoin = diskJoin;
+    }
+
+    public static boolean isReorder() {
+        return isReorder;
+    }
+
+    public static void setReorder(boolean reorder) {
+        isReorder = reorder;
+    }
+
+    public static void setDataPath(String dataPath) {
+        setReorder(!dataPath.contains("data/s/") && !dataPath.contains("data/xs/"));
+        setDiskJoin(dataPath.contains("data/l"));
     }
 
     public void resetOnNextQuery() {

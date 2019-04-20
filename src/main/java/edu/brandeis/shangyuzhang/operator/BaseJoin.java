@@ -63,7 +63,7 @@ public abstract class BaseJoin implements RowsCounter {
     private boolean isRightTableBufferrable() {
         int leftSize = ((RowsCounter) leftTable).getNumOfRows();
         int rightSize = ((RowsCounter) rightTable).getNumOfRows();
-        return !database.isLargeDataset() || leftSize >= rightSize;
+        return !database.isDiskJoin() || leftSize >= rightSize;
     }
 
     protected void cartesianJoin() throws IOException {
