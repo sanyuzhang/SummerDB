@@ -24,7 +24,6 @@ public class Parser {
     private static final String FROM = "FROM";
     private static final String WHERE = "WHERE";
     private static final String AND = "AND";
-    private static final String END = "END";
 
     private String[] relations;
     private Optimizer optimizer;
@@ -81,7 +80,6 @@ public class Parser {
 
     private void parsePredicate(String line) {
         line = line.replaceFirst(AND, EMPTY);
-        line = line.replaceFirst(END, AND); // TODO Ryan Bug
         line = cleanSqlForParsing(line, new String[]{SEMICOLON, SPACES});
         line = line.toUpperCase();
         for (String elem : line.split(AND)) {
