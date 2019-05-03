@@ -11,7 +11,7 @@ public class Database {
     private static Map<String, Relation> relations;
 
     private static boolean isDiskJoin;
-    private static boolean isReorder;
+    private static boolean isReOptOnEqualCost;
 
     private Database() {
         relations = new HashMap<>();
@@ -60,16 +60,16 @@ public class Database {
         isDiskJoin = diskJoin;
     }
 
-    public static boolean isReorder() {
-        return isReorder;
+    public static boolean isReOptOnEqualCost() {
+        return isReOptOnEqualCost;
     }
 
-    public static void setReorder(boolean reorder) {
-        isReorder = reorder;
+    public static void setReOptOnEqualCost(boolean reOpt) {
+        isReOptOnEqualCost = reOpt;
     }
 
     public static void setDataPath(String dataPath) {
-        setReorder(!dataPath.contains("data/s/") && !dataPath.contains("data/xs/"));
+        setReOptOnEqualCost(!dataPath.contains("data/s/") && !dataPath.contains("data/xs/"));
         setDiskJoin(dataPath.contains("data/l"));
     }
 

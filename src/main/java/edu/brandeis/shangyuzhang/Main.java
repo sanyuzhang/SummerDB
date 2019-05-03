@@ -20,10 +20,10 @@ public class Main {
 
     private static Database database = Database.getInstance();
 
-    private static final boolean isLocal = false;
+    private static final boolean isLocalTest = false;
 
     private static TestDataSet testDataSet;
-    private static final String TARGET_DATA_SET = Constants.LARGE_TWO;
+    private static final String TARGET_DATA_SET = Constants.XSMALL;
 
     private static void load(String filePaths) {
         database.setDataPath(filePaths);
@@ -62,7 +62,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        if (isLocal) {
+        if (isLocalTest) {
             TestDataSetFactory factory = new TestDataSetFactory();
             testDataSet = factory.createDataSet(TARGET_DATA_SET);
             load(testDataSet.getFilePath());

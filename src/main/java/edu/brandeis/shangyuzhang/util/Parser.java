@@ -111,6 +111,7 @@ public class Parser {
     public void optimize() {
         optimizer.initBestMap();
         joinOrder = optimizer.computeBest();
+//        System.out.println(joinOrder);
     }
 
     public void startEngine() throws IOException {

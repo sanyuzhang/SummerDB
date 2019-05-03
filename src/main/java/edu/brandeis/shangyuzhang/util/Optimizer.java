@@ -140,7 +140,7 @@ public class Optimizer {
         if (curr == null || curr.isEmpty()) return 1;
         double cardinal1 = calculateNaturalJoinCardinal(curr);
         double cardinal2 = calculateNaturalJoinCardinal(order);
-        if (cardinal1 == cardinal2 && database.isReorder()) {
+        if (cardinal1 == cardinal2 && database.isReOptOnEqualCost()) {
             for (int i = 0; i < curr.length(); i++) {
                 double size1 = database.getRelationByName(curr.substring(i, i + 1)).getEstimatedCardinality();
                 double size2 = database.getRelationByName(order.substring(i, i + 1)).getEstimatedCardinality();
