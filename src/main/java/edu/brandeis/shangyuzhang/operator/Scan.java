@@ -13,19 +13,24 @@ public class Scan implements Iterator<int[]>, RowsCounter {
     private final int numCols;
     private int rowsRemaining;
 
+    private int[] colsToKeep;
     private int numRows;
 
     private int pointer;
     private byte[] bytes;
 
-    public Scan(String tb) throws IOException {
+    private static final int BUFFER_SIZE = 8 * 1024;
+
+    public Scan(String tb, int[] keep) throws IOException {
         dis = Catalog.openStream(tb, false);
         numCols = Catalog.numCols(tb);
         numRows = Catalog.numRows(tb);
         rowsRemaining = numRows;
 
+        colsToKeep = keep;
+
         pointer = 0;
-        bytes = new byte[8 * 1024];
+        bytes = new byte[BUFFER_SIZE];
         dis.read(bytes);
     }
 
@@ -38,17 +43,24 @@ public class Scan implements Iterator<int[]>, RowsCounter {
 
     public int[] next() {
         try {
-            int i = 0;
-            int[] row = new int[numCols];
-            while (i < numCols) {
-                if (pointer < 8 * 1024) {
-                    row[i++] = bytes[pointer] << 24 | (bytes[pointer + 1] & 0xFF) << 16 | (bytes[pointer + 2] & 0xFF) << 8 | (bytes[pointer + 3] & 0xFF);
+            int col = 0, rowId = 0;
+
+            int rowLen = colsToKeep.length;
+            int[] row = new int[rowLen];
+
+            while (col < numCols) {
+                if (pointer < BUFFER_SIZE) {
+                    if (rowId < rowLen && col == colsToKeep[rowId]) {
+                        row[rowId++] = bytes[pointer] << 24 | (bytes[pointer + 1] & 0xFF) << 16 | (bytes[pointer + 2] & 0xFF) << 8 | (bytes[pointer + 3] & 0xFF);
+                    }
+                    col++;
                     pointer += 4;
                 } else {
                     pointer = 0;
                     dis.read(bytes);
                 }
             }
+
             rowsRemaining--;
             return row;
         } catch (IOException e) {

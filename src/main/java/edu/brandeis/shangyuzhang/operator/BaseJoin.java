@@ -221,26 +221,20 @@ public abstract class BaseJoin implements RowsCounter {
             ((BaseJoin) leftTable).resetIterator();
         } else if (leftTable instanceof Filter) {
             leftTable = null;
-            leftTable = new Filter(new Project(new Scan(firstTableName), firstTableNumOfRows, database.getRelationByName(firstTableName).getColsToKeep()), firstTableNumOfRows, firstTableFilterPredicate);
-        } else if (leftTable instanceof Project) {
-            leftTable = null;
-            leftTable = new Project(new Scan(firstTableName), firstTableNumOfRows, database.getRelationByName(firstTableName).getColsToKeep());
+            leftTable = new Filter(new Scan(firstTableName, database.getRelationByName(firstTableName).getColsToKeep()), firstTableNumOfRows, firstTableFilterPredicate);
         } else if (leftTable instanceof Scan) {
             leftTable = null;
-            leftTable = new Scan(firstTableName);
+            leftTable = new Scan(firstTableName, database.getRelationByName(firstTableName).getColsToKeep());
         }
     }
 
     protected void resetRightIterator() throws IOException {
         if (rightTable instanceof Filter) {
             rightTable = null;
-            rightTable = new Filter(new Project(new Scan(currTableName), currTableNumOfRows, database.getRelationByName(currTableName).getColsToKeep()), currTableNumOfRows, currTableFilterPredicate);
-        } else if (rightTable instanceof Project) {
-            rightTable = null;
-            rightTable = new Project(new Scan(currTableName), currTableNumOfRows, database.getRelationByName(currTableName).getColsToKeep());
+            rightTable = new Filter(new Scan(currTableName, database.getRelationByName(currTableName).getColsToKeep()), currTableNumOfRows, currTableFilterPredicate);
         } else if (rightTable instanceof Scan) {
             rightTable = null;
-            rightTable = new Scan(currTableName);
+            rightTable = new Scan(currTableName, database.getRelationByName(currTableName).getColsToKeep());
         }
     }
 

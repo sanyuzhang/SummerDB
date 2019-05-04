@@ -111,7 +111,6 @@ public class Parser {
     public void optimize() {
         optimizer.initBestMap();
         joinOrder = optimizer.computeBest();
-//        System.out.println(joinOrder);
     }
 
     public void startEngine() throws IOException {
@@ -136,12 +135,10 @@ public class Parser {
             String newTableName = joinOrder.substring(0, i + 1);
             String currTableName = String.valueOf(joinOrder.charAt(i));
 
-            Iterator currIterator = new Scan(currTableName);
+            Relation currRelation = database.getRelationByName(currTableName);
+            Iterator currIterator = new Scan(currTableName, currRelation.getColsToKeep());
             int currNumOfRows = ((RowsCounter) currIterator).getNumOfRows();
             if (resultIterator == null) firstNumOfRows = currNumOfRows;
-
-            Relation currRelation = database.getRelationByName(currTableName);
-            currIterator = new Project(currIterator, currNumOfRows, currRelation.getColsToKeep());
 
             FilterPredicate currFilterPred = optimizer.getFilterPredicateByTableName(currTableName);
             if (currFilterPred != null) {
