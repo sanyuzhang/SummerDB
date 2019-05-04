@@ -13,11 +13,13 @@ public class Scan implements Iterator<int[]>, RowsCounter {
     private final int numCols;
     private int rowsRemaining;
 
+    private final int newNumCols;
     private int[] colsToKeep;
     private int numRows;
 
     private int pointer;
     private byte[] bytes;
+    private final int jump;
 
     private static final int BUFFER_SIZE = 8 * 1024;
 
@@ -28,6 +30,8 @@ public class Scan implements Iterator<int[]>, RowsCounter {
         rowsRemaining = numRows;
 
         colsToKeep = keep;
+        newNumCols = colsToKeep.length;
+        jump = 4 * (numCols - colsToKeep[newNumCols - 1] - 1);
 
         pointer = 0;
         bytes = new byte[BUFFER_SIZE];
@@ -43,24 +47,30 @@ public class Scan implements Iterator<int[]>, RowsCounter {
 
     public int[] next() {
         try {
-            int col = 0, rowId = 0;
-
-            int rowLen = colsToKeep.length;
-            int[] row = new int[rowLen];
-
+            int col = 0, newCol = 0;
+            int[] row = new int[newNumCols];
             while (col < numCols) {
                 if (pointer < BUFFER_SIZE) {
-                    if (rowId < rowLen && col == colsToKeep[rowId]) {
-                        row[rowId++] = bytes[pointer] << 24 | (bytes[pointer + 1] & 0xFF) << 16 | (bytes[pointer + 2] & 0xFF) << 8 | (bytes[pointer + 3] & 0xFF);
+                    if (newCol < newNumCols) {
+                        if (col == colsToKeep[newCol]) {
+                            row[newCol++] = bytes[pointer] << 24 | (bytes[pointer + 1] & 0xFF) << 16 | (bytes[pointer + 2] & 0xFF) << 8 | (bytes[pointer + 3] & 0xFF);
+                        }
+                        col++;
+                        pointer += 4;
+                    } else {
+                        pointer += jump;
+                        if (pointer < BUFFER_SIZE) break;
+                        else {
+                            pointer -= BUFFER_SIZE;
+                            dis.read(bytes);
+                            break;
+                        }
                     }
-                    col++;
-                    pointer += 4;
                 } else {
                     pointer = 0;
                     dis.read(bytes);
                 }
             }
-
             rowsRemaining--;
             return row;
         } catch (IOException e) {
