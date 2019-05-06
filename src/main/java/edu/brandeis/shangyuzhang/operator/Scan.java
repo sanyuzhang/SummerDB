@@ -7,6 +7,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
+import static edu.brandeis.shangyuzhang.util.Constants.BUFFER_SIZE;
+
 public class Scan implements Iterator<int[]>, RowsCounter {
 
     private final DataInputStream dis;
@@ -20,8 +22,6 @@ public class Scan implements Iterator<int[]>, RowsCounter {
     private int pointer;
     private byte[] bytes;
     private final int jump;
-
-    private static final int BUFFER_SIZE = 8 * 1024;
 
     public Scan(String tb, int[] keep) throws IOException {
         dis = Catalog.openStream(tb, false);

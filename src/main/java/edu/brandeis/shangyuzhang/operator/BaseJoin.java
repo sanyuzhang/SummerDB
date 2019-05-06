@@ -9,6 +9,8 @@ import edu.brandeis.shangyuzhang.util.Database;
 import java.io.IOException;
 import java.util.*;
 
+import static edu.brandeis.shangyuzhang.util.Constants.BUFFER_SIZE;
+
 public abstract class BaseJoin implements RowsCounter {
 
     protected int numRows;
@@ -29,7 +31,6 @@ public abstract class BaseJoin implements RowsCounter {
 
     protected boolean isCartesianJoin;
 
-    private static final int BUFFER_SIZE = 1024 * 32;
     protected Database database = Database.getInstance();
 
     public BaseJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startIndexMap,

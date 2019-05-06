@@ -7,6 +7,7 @@ import edu.brandeis.shangyuzhang.util.Catalog;
 import java.io.*;
 import java.util.*;
 
+import static edu.brandeis.shangyuzhang.util.Constants.BYTE_SIZE;
 import static edu.brandeis.shangyuzhang.util.Constants.SUFFIX;
 
 public class DiskJoin extends BaseJoin implements Iterator<int[]> {
@@ -18,7 +19,6 @@ public class DiskJoin extends BaseJoin implements Iterator<int[]> {
     private int numCols = 0;
 
     private int pointerInBytes;
-    private static final int BYTE_SIZE = 1024 * 32;
     private byte[] bytes;
 
     public DiskJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
