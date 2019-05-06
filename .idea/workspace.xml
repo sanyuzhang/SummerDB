@@ -2,9 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b6b0674-dde4-49fa-8e08-42b9d69e7a18" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/FilterPredicate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/FilterPredicate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/Relation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/Relation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/DiskJoin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/DiskJoin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/MemJoin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/MemJoin.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Scan.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Scan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Sum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Sum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Constants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Database.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Optimizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Optimizer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Parser.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -19,23 +28,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="324">
-              <caret line="42" column="42" selection-start-line="42" selection-start-column="42" selection-end-line="42" selection-end-column="42" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Optimizer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3330">
-              <caret line="195" column="1" selection-start-line="195" selection-start-column="1" selection-end-line="195" selection-end-column="1" />
+            <state relative-caret-position="162">
+              <caret line="33" column="35" lean-forward="true" selection-start-line="33" selection-start-column="35" selection-end-line="33" selection-end-column="35" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -46,47 +43,34 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Parser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-8">
-              <caret line="100" column="9" selection-start-line="100" selection-start-column="9" selection-end-line="100" selection-end-column="9" />
+            <state relative-caret-position="-105">
+              <caret line="170" column="99" selection-start-line="170" selection-start-column="99" selection-end-line="170" selection-end-column="99" />
               <folding>
                 <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Scan.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="73" column="28" lean-forward="true" selection-start-line="73" selection-start-column="28" selection-end-line="73" selection-end-column="28" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#2630#2631#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/xs/answers.txt">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Database.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="28" column="1" selection-start-line="28" selection-start-column="1" selection-end-line="28" selection-end-column="1" />
+            <state relative-caret-position="549">
+              <caret line="76" selection-start-line="76" selection-end-line="76" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#843#844#0" expanded="true" />
+                <element signature="e#890#891#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/DiskJoin.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Constants.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="11" column="35" selection-start-line="11" selection-start-column="35" selection-end-line="11" selection-end-column="35" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#2875#2876#0" expanded="true" />
-                <element signature="e#2918#2919#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="414">
+              <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
             </state>
           </provider>
         </entry>
@@ -102,10 +86,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>AND</find>
-      <find>parseTableAndCol</find>
-      <find>AND_CASE_INSENSITIVE</find>
-      <find>and</find>
       <find>initializeDataStream</find>
       <find>rows</find>
       <find>-4076253</find>
@@ -132,6 +112,10 @@
       <find>unique</find>
       <find>dataPath</find>
       <find>isReorder</find>
+      <find>filename</find>
+      <find>colsToKeepSet</find>
+      <find>final</find>
+      <find>Naive</find>
     </findStrings>
     <dirStrings>
       <dir>D:\Dev\SummerDB\data\xxxs</dir>
@@ -156,7 +140,6 @@
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/ByteToIntUtils.java" />
         <option value="$PROJECT_DIR$/data/xxxs/D.csv" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/SimplePredicate.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/FilterPredicate.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Operation.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseIterator.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/NatJoinPredicate.java" />
@@ -174,28 +157,29 @@
         <option value="$PROJECT_DIR$/data/s/queries.sql" />
         <option value="$PROJECT_DIR$/data/l/queries.sql" />
         <option value="$PROJECT_DIR$/data/xs/answers.txt" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Sum.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/NaturalJoinPredicate.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/RowsCounter.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/interfaces/RowsCounter.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Filter.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/MemSum.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/MemJoin.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/DiskJoin.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/DiskSum.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/test/LargeTwoDataSet.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Constants.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/test/TestDataSetFactory.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/Relation.java" />
         <option value="$PROJECT_DIR$/data/l2/queries.sql" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Loader.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Database.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Optimizer.java" />
         <option value="$PROJECT_DIR$/data/xs/queries.sql" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Project.java" />
-        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Parser.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/MemJoin.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Sum.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/FilterPredicate.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Optimizer.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/DiskJoin.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Scan.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/Relation.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Parser.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Database.java" />
+        <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Constants.java" />
         <option value="$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/Main.java" />
       </list>
     </option>
@@ -221,7 +205,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -238,7 +222,7 @@
               <item name="SummerDB" type="b2602c69:ProjectViewProjectNode" />
               <item name="SummerDB" type="462c0819:PsiDirectoryNode" />
               <item name="data" type="462c0819:PsiDirectoryNode" />
-              <item name="xs" type="462c0819:PsiDirectoryNode" />
+              <item name="l" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="SummerDB" type="b2602c69:ProjectViewProjectNode" />
@@ -286,6 +270,15 @@
             </path>
             <path>
               <item name="SummerDB" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SummerDB" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="shangyuzhang" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SummerDB" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
             <path>
@@ -297,7 +290,7 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -378,7 +371,7 @@
     <frame x="-7" y="-7" width="2062" height="1126" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21457087" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23103793" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
@@ -389,7 +382,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.16498993" />
       <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.24044265" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.25150904" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.24949698" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -432,50 +425,6 @@
     </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk-10.0.2/lib/src.zip!/java.base/java/util/HashMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="916" column="49" selection-start-line="916" selection-start-column="49" selection-end-line="916" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk-10.0.2/lib/src.zip!/java.base/java/util/HashSet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="172" selection-start-line="172" selection-end-line="172" />
-          <folding>
-            <element signature="e#6532#6533#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk-10.0.2/lib/src.zip!/java.base/java/util/Set.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="347" column="12" selection-start-line="347" selection-start-column="12" selection-end-line="347" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Catalog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" column="29" lean-forward="true" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#677#678#0" expanded="true" />
-            <element signature="e#803#804#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk-10.0.2/lib/src.zip!/java.base/java/io/DataOutputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="121" column="16" selection-start-line="121" selection-start-column="16" selection-end-line="121" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/xxs/answers.txt" />
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/test/XSmallDataSet.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
@@ -496,16 +445,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret column="12" selection-start-column="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/FilterPredicate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="613">
-          <caret line="48" column="36" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -552,21 +491,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/NaturalJoinPredicate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" column="21" selection-start-line="7" selection-start-column="21" selection-end-line="7" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/interfaces.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/interfaces/RowsCounter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/interfaces/Estimator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="72">
@@ -574,34 +499,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Filter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="42" column="5" lean-forward="true" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/m/answers.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk-10.0.2/lib/src.zip!/java.base/java/lang/String.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="158">
           <caret line="2078" column="18" selection-start-line="2078" selection-start-column="18" selection-end-line="2078" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Constants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="4" column="40" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="40" />
         </state>
       </provider>
     </entry>
@@ -620,59 +521,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/DiskSum.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Sum.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="14" column="11" selection-start-line="14" selection-start-column="11" selection-end-line="14" selection-end-column="11" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk-10.0.2/lib/src.zip!/java.base/java/lang/Integer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
           <caret line="25" column="18" lean-forward="true" selection-start-line="25" selection-start-column="18" selection-end-line="25" selection-end-column="18" />
           <folding>
             <element signature="e#0#70595#0" expanded="true" />
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Loader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="65" column="50" selection-start-line="65" selection-start-column="50" selection-end-line="65" selection-end-column="50" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/MemJoin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="19" column="5" selection-start-line="19" selection-start-column="5" selection-end-line="19" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/l/queries.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="85" lean-forward="true" selection-start-line="85" selection-end-line="85" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Database.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="38" lean-forward="true" selection-start-line="12" selection-start-column="38" selection-end-line="12" selection-end-column="38" />
-          <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
@@ -697,88 +551,11 @@
         <state relative-caret-position="-89625" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/xs/queries.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="1" column="15" lean-forward="true" selection-start-line="1" selection-start-column="15" selection-end-line="1" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Optimizer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3330">
-          <caret line="195" column="1" selection-start-line="195" selection-start-column="1" selection-end-line="195" selection-end-column="1" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/Relation.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="684">
-          <caret line="38" column="5" lean-forward="true" selection-start-line="38" selection-start-column="5" selection-end-line="38" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2208#2209#0" expanded="true" />
-            <element signature="e#2251#2252#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Project.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="17" column="5" lean-forward="true" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Parser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="100" column="9" selection-start-line="100" selection-start-column="9" selection-end-line="100" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Project.java" />
     <entry file="file://$PROJECT_DIR$/data/xs/A.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="900000">
           <caret line="50000" selection-start-line="50000" selection-end-line="50000" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="123" selection-start-line="123" selection-end-line="123" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/DiskJoin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="35" selection-start-line="11" selection-start-column="35" selection-end-line="11" selection-end-column="35" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2875#2876#0" expanded="true" />
-            <element signature="e#2918#2919#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/xs/answers.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="28" column="1" selection-start-line="28" selection-start-column="1" selection-end-line="28" selection-end-column="1" />
         </state>
       </provider>
     </entry>
@@ -789,10 +566,152 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/Main.java">
+    <entry file="jar://C:/Program Files/Java/jdk-10.0.2/lib/src.zip!/java.base/java/util/concurrent/Future.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="42" column="42" selection-start-line="42" selection-start-column="42" selection-end-line="42" selection-end-column="42" />
+        <state relative-caret-position="-496">
+          <caret line="87" column="17" selection-start-line="87" selection-start-column="17" selection-end-line="87" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-10.0.2/lib/src.zip!/java.base/java/lang/ClassLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="498" selection-start-line="498" selection-end-line="498" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/interfaces/RowsCounter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/FilterPredicate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="15" column="24" lean-forward="true" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/NaturalJoinPredicate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="7" column="21" selection-start-line="7" selection-start-column="21" selection-end-line="7" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/ParseElem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" selection-start-line="10" selection-end-line="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/MemJoin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="30" selection-start-line="30" selection-end-line="30" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Filter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="630">
+          <caret line="42" column="5" lean-forward="true" selection-start-line="42" selection-start-column="5" selection-end-line="42" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/DiskJoin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="21" column="25" selection-start-line="21" selection-start-column="25" selection-end-line="21" selection-end-column="25" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Catalog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" column="29" lean-forward="true" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#602#603#0" expanded="true" />
+            <element signature="e#677#678#0" expanded="true" />
+            <element signature="e#728#729#0" expanded="true" />
+            <element signature="e#803#804#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Loader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="65" column="50" selection-start-line="65" selection-start-column="50" selection-end-line="65" selection-end-column="50" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/xs/queries.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/xs/answers.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="17" lean-forward="true" selection-start-column="17" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/m/queries.sql">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/model/Relation.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-321">
+          <caret line="116" column="22" selection-start-line="116" selection-start-column="22" selection-end-line="116" selection-end-column="22" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1468#1469#0" expanded="true" />
+            <element signature="e#1506#1507#0" expanded="true" />
+            <element signature="e#2208#2209#0" expanded="true" />
+            <element signature="e#2251#2252#0" expanded="true" />
+            <element signature="e#2482#2483#0" expanded="true" />
+            <element signature="e#2520#2521#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Optimizer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="81" column="32" selection-start-line="81" selection-start-column="32" selection-end-line="81" selection-end-column="32" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Sum.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="41" column="9" selection-start-line="41" selection-start-column="9" selection-end-line="41" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -801,11 +720,80 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/Scan.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="73" column="28" lean-forward="true" selection-start-line="73" selection-start-column="28" selection-end-line="73" selection-end-column="28" />
+        <state relative-caret-position="306">
+          <caret line="17" column="27" selection-start-line="17" selection-start-column="27" selection-end-line="17" selection-end-column="27" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2630#2631#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/operator/BaseJoin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="423">
+          <caret line="155" column="17" selection-start-line="155" selection-start-column="17" selection-end-line="155" selection-end-column="17" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/m/answers.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk-10.0.2/lib/src.zip!/java.base/java/util/concurrent/ThreadPoolExecutor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="585">
+          <caret line="1181" column="50" selection-start-line="1181" selection-start-column="50" selection-end-line="1181" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/l/queries.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1511">
+          <caret line="85" lean-forward="true" selection-start-line="85" selection-end-line="85" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Database.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="549">
+          <caret line="76" selection-start-line="76" selection-end-line="76" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#843#844#0" expanded="true" />
+            <element signature="e#890#891#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/util/Parser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-105">
+          <caret line="170" column="99" selection-start-line="170" selection-start-column="99" selection-end-line="170" selection-end-column="99" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/edu/brandeis/shangyuzhang/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="33" column="35" lean-forward="true" selection-start-line="33" selection-start-column="35" selection-end-line="33" selection-end-column="35" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

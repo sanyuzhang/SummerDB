@@ -16,11 +16,11 @@ public class Relation implements Estimator {
     private int[] maxCols;
     private int[] uniqueNumCols;
 
-    private int[] colsToKeep;
-    private Set<Integer> colsToKeepSet;
-    private Map<Integer, Integer> oldNewColsMapping;
-
-    private double estimatedCardinality;
+    private int numOfQuery;
+    private int[][] colsToKeep;
+    private Set<Integer>[] colsToKeepSet;
+    private Map<Integer, Integer>[] oldNewColsMapping;
+    private double[] estimatedCardinality;
 
     public Relation(String path, String tn, int c) {
         filePath = path;
@@ -34,8 +34,6 @@ public class Relation implements Estimator {
         Arrays.fill(maxCols, Integer.MIN_VALUE);
 
         uniqueNumCols = new int[numCols];
-
-        colsToKeepSet = new HashSet();
     }
 
     public void initUniqueNumOfCols() {
@@ -43,29 +41,35 @@ public class Relation implements Estimator {
             uniqueNumCols[i] = Math.min(numRows, maxCols[i] - minCols[i]);
     }
 
-    public void resetOnNextQuery() {
-        colsToKeep = null;
-        colsToKeepSet.clear();
-        oldNewColsMapping.clear();
-        estimatedCardinality = numRows;
+    public void initMultiThreadsRelation(int num) {
+        this.numOfQuery = num;
+
+        colsToKeep = new int[numOfQuery][];
+
+        colsToKeepSet = new HashSet[numOfQuery];
+        Arrays.fill(colsToKeepSet, new HashSet());
+
+        oldNewColsMapping = new HashMap[numOfQuery];
+
+        estimatedCardinality = new double[numOfQuery];
+        Arrays.fill(estimatedCardinality, numRows);
     }
 
     public void setNumRows(int numRows) {
         this.numRows = numRows;
-        this.estimatedCardinality = numRows;
     }
 
-    public void initOldNewColsMapping() {
-        int size = colsToKeepSet.size();
-        colsToKeep = new int[size];
-        oldNewColsMapping = new HashMap(size);
-        for (int c : colsToKeepSet) {
-            colsToKeep[--size] = c;
+    public void initOldNewColsMapping(int queryId) {
+        int size = colsToKeepSet[queryId].size();
+        colsToKeep[queryId] = new int[size];
+        oldNewColsMapping[queryId] = new HashMap(size);
+        for (int c : colsToKeepSet[queryId]) {
+            colsToKeep[queryId][--size] = c;
         }
-        Arrays.sort(colsToKeep);
+        Arrays.sort(colsToKeep[queryId]);
         int newIndex = 0;
-        for (int c : colsToKeep) {
-            oldNewColsMapping.put(c, newIndex++);
+        for (int c : colsToKeep[queryId]) {
+            oldNewColsMapping[queryId].put(c, newIndex++);
         }
     }
 
@@ -74,12 +78,12 @@ public class Relation implements Estimator {
         maxCols[index] = Math.max(maxCols[index], value);
     }
 
-    public void setEstimatedCardinality(double estimatedCardinality) {
-        this.estimatedCardinality = estimatedCardinality;
+    public void setEstimatedCardinality(int qid, double estimatedCardinality) {
+        this.estimatedCardinality[qid] = estimatedCardinality;
     }
 
-    public double getEstimatedCardinality() {
-        return estimatedCardinality;
+    public double getEstimatedCardinality(int qid) {
+        return estimatedCardinality[qid];
     }
 
     public int getNumCols() {
@@ -94,24 +98,24 @@ public class Relation implements Estimator {
         return tableName;
     }
 
-    public void addColToKeep(int col) {
-        colsToKeepSet.add(col);
+    public void addColToKeep(int qid, int col) {
+        colsToKeepSet[qid].add(col);
     }
 
-    public int[] getColsToKeep() {
-        return colsToKeep;
+    public int[] getColsToKeep(int qid) {
+        return colsToKeep[qid];
     }
 
-    public int getNumOfColsToKeep() {
-        return colsToKeep.length;
+    public int getNumOfColsToKeep(int qid) {
+        return colsToKeep[qid].length;
     }
 
     public String getFilePath() {
         return filePath;
     }
 
-    public int getNewByOldCol(int oldCol) {
-        return oldNewColsMapping.get(oldCol);
+    public int getNewByOldCol(int qid, int oldCol) {
+        return oldNewColsMapping[qid].get(oldCol);
     }
 
     public int getUniqueNumCol(int oldCol) {

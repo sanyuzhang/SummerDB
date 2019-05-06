@@ -11,17 +11,17 @@ import static edu.brandeis.shangyuzhang.util.Constants.BUFFER_SIZE;
 
 public class Scan implements Iterator<int[]>, RowsCounter {
 
-    private final DataInputStream dis;
-    private final int numCols;
+    private DataInputStream dis;
+    private int numCols;
     private int rowsRemaining;
 
-    private final int newNumCols;
+    private int newNumCols;
     private int[] colsToKeep;
     private int numRows;
 
     private int pointer;
     private byte[] bytes;
-    private final int jump;
+    private int jump;
 
     public Scan(String tb, int[] keep) throws IOException {
         dis = Catalog.openStream(tb, false);

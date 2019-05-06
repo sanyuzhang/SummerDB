@@ -36,8 +36,12 @@ public class Database {
         return relations.get(tableName);
     }
 
-    public void initOldNewColsMapping() {
-        for (Relation r : relations.values()) r.initOldNewColsMapping();
+    public void initMultiThreadsRelations(int numOfQuery) {
+        for (Relation r : relations.values()) r.initMultiThreadsRelation(numOfQuery);
+    }
+
+    public void initOldNewColsMapping(int queryId) {
+        for (Relation r : relations.values()) r.initOldNewColsMapping(queryId);
     }
 
     public String getRelationPath(String tableName) {
@@ -70,13 +74,8 @@ public class Database {
 
     public static void setDataPath(String dataPath) {
         setReOptOnEqualCost(!dataPath.contains("data/s/") && !dataPath.contains("data/xs/"));
-        setDiskJoin(dataPath.contains("data/l"));
-    }
-
-    public void resetOnNextQuery() {
-        for (Relation r : relations.values()) {
-            r.resetOnNextQuery();
-        }
+        setDiskJoin(dataPath.contains("data/l") || dataPath.contains("data/m"));
+//        setDiskJoin(true);
     }
 
     public static String getRootPath() {

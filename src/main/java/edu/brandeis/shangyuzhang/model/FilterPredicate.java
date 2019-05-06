@@ -13,9 +13,11 @@ public class FilterPredicate implements Predicate<int[]> {
     public List<Integer> values;
 
     private Relation relation;
+    private int queryId;
 
-    public FilterPredicate(Relation r) {
+    public FilterPredicate(Relation r, int qid) {
         relation = r;
+        queryId = qid;
         operators = new ArrayList();
         columns = new ArrayList();
         values = new ArrayList();
@@ -42,7 +44,7 @@ public class FilterPredicate implements Predicate<int[]> {
         int size = operators.size();
         for (int i = 0; i < size; i++) {
             String operator = operators.get(i);
-            int newCol = relation.getNewByOldCol(columns.get(i));
+            int newCol = relation.getNewByOldCol(queryId, columns.get(i));
             int value = values.get(i);
             switch (operator) {
                 case LESSER:

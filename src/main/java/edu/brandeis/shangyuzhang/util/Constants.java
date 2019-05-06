@@ -17,7 +17,7 @@ public class Constants {
     public static final String SUFFIX = ".dat";
     public static final String COMMA = ",";
 
-    public static final int BUFFER_SIZE = 128 * 1024;
-    public static final int BYTE_SIZE = 128 * 1024;
+    public static final int BUFFER_SIZE = 192 * 1024;
+    public static final int BYTE_SIZE = 192 * 1024;
 
 }

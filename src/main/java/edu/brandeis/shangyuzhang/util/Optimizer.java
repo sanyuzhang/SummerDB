@@ -8,6 +8,8 @@ import java.util.*;
 
 public class Optimizer {
 
+    private int queryId;
+
     private String[] tables;
     private Map<String, String> best;
 
@@ -19,7 +21,8 @@ public class Optimizer {
 
     private Database database = Database.getInstance();
 
-    public Optimizer(String[] tbs) {
+    public Optimizer(String[] tbs, int qid) {
+        queryId = qid;
         tables = tbs;
         best = new HashMap();
         cardinalMap = new HashMap();
@@ -52,7 +55,7 @@ public class Optimizer {
     }
 
     public void addFilterPredicate(ParseElem r, String operator, int value) {
-        filterPredicates.putIfAbsent(r.table, new FilterPredicate(database.getRelationByName(r.table)));
+        filterPredicates.putIfAbsent(r.table, new FilterPredicate(database.getRelationByName(r.table), queryId));
         filterPredicates.get(r.table).addPredicate(operator, r.col, value);
     }
 
@@ -106,7 +109,7 @@ public class Optimizer {
         } else {
             cardinality = r.getNumRows();
         }
-        r.setEstimatedCardinality(cardinality);
+        r.setEstimatedCardinality(queryId, cardinality);
         cardinalMap.put(r.getTableName(), cardinality);
         return cardinality;
     }
@@ -142,8 +145,8 @@ public class Optimizer {
         double cardinal2 = calculateNaturalJoinCardinal(order);
         if (cardinal1 == cardinal2 && database.isReOptOnEqualCost()) {
             for (int i = 0; i < curr.length(); i++) {
-                double size1 = database.getRelationByName(curr.substring(i, i + 1)).getEstimatedCardinality();
-                double size2 = database.getRelationByName(order.substring(i, i + 1)).getEstimatedCardinality();
+                double size1 = database.getRelationByName(curr.substring(i, i + 1)).getEstimatedCardinality(queryId);
+                double size2 = database.getRelationByName(order.substring(i, i + 1)).getEstimatedCardinality(queryId);
                 if (size1 == size2) continue;
                 return size1 - size2;
             }

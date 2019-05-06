@@ -6,12 +6,13 @@ import edu.brandeis.shangyuzhang.operator.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static edu.brandeis.shangyuzhang.util.Constants.*;
 
-public class Parser {
+public class Parser implements Callable<String> {
 
     private Database database = Database.getInstance();
 
@@ -29,8 +30,11 @@ public class Parser {
     private Optimizer optimizer;
     private String joinOrder;
     private List<ParseElem> sumElems;
+    private int queryId;
 
-    public Parser(String[] sql) {
+    public Parser(String[] sql, int qid) {
+        queryId = qid;
+
         String from = sql[1];
         parseFrom(from);
 
@@ -43,7 +47,7 @@ public class Parser {
         String and = sql[3];
         parsePredicate(and);
 
-        database.initOldNewColsMapping();
+        database.initOldNewColsMapping(queryId);
     }
 
     private String cleanSqlForParsing(String line, String[] removes) {
@@ -56,7 +60,7 @@ public class Parser {
     private void parseFrom(String line) {
         line = cleanSqlForParsing(line, new String[]{FROM, SPACES});
         relations = line.split(COMMA);
-        optimizer = new Optimizer(relations);
+        optimizer = new Optimizer(relations, queryId);
     }
 
     private void parseProj(String line) {
@@ -104,7 +108,7 @@ public class Parser {
     private ParseElem parseTableAndCol(String tableAndCol) {
         String r = tableAndCol.split(DOT)[0];
         int col = Integer.parseInt(tableAndCol.replaceAll("[\\D]", EMPTY));
-        database.getRelationByName(r).addColToKeep(col);
+        database.getRelationByName(r).addColToKeep(queryId, col);
         return new ParseElem(r, col);
     }
 
@@ -113,7 +117,7 @@ public class Parser {
         joinOrder = optimizer.computeBest();
     }
 
-    public void startEngine() throws IOException {
+    public String startEngine() throws IOException {
         Iterator resultIterator = null;
         StringBuilder joinedTableNames = new StringBuilder();
 
@@ -136,7 +140,7 @@ public class Parser {
             String currTableName = String.valueOf(joinOrder.charAt(i));
 
             Relation currRelation = database.getRelationByName(currTableName);
-            Iterator currIterator = new Scan(currTableName, currRelation.getColsToKeep());
+            Iterator currIterator = new Scan(currTableName, currRelation.getColsToKeep(queryId));
             int currNumOfRows = ((RowsCounter) currIterator).getNumOfRows();
             if (resultIterator == null) firstNumOfRows = currNumOfRows;
 
@@ -152,19 +156,19 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableStartIndexMap.put(currTableName, joinedNumOfCols);
-                    sums = new Sum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, sumElems).getSums();
+                    sums = new Sum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, queryId, sumElems).getSums();
                     break;
                 } else {
                     currIterator = database.isDiskJoin() ?
-                            new DiskJoin(resultIterator, currIterator, tableStartIndexMap, newTableName, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows) :
-                            new MemJoin(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows);
+                            new DiskJoin(resultIterator, currIterator, tableStartIndexMap, newTableName, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, queryId) :
+                            new MemJoin(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, queryId);
                 }
             }
             resultIterator = currIterator;
 
             joinedTableNames.append(currTableName);
             tableStartIndexMap.put(currTableName, joinedNumOfCols);
-            joinedNumOfCols += database.getRelationByName(currTableName).getNumOfColsToKeep();
+            joinedNumOfCols += database.getRelationByName(currTableName).getNumOfColsToKeep(queryId);
         }
 
         StringBuilder result = new StringBuilder();
@@ -180,7 +184,8 @@ public class Parser {
             }
         }
         result.deleteCharAt(result.length() - 1);
-        System.out.println(result);
+//        System.out.println(result);
+        return result.toString();
     }
 
     private boolean isNaturalJoinable(String joinedTablesNames, String currTableName, ParseElem[] pair) {
@@ -196,4 +201,9 @@ public class Parser {
         return false;
     }
 
+    @Override
+    public String call() throws Exception {
+        optimize();
+        return startEngine();
+    }
 }

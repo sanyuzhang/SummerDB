@@ -14,6 +14,7 @@ import static edu.brandeis.shangyuzhang.util.Constants.BUFFER_SIZE;
 public abstract class BaseJoin implements RowsCounter {
 
     protected int numRows;
+    protected int queryId;
 
     private Iterator leftTable;
     private Iterator rightTable;
@@ -35,7 +36,7 @@ public abstract class BaseJoin implements RowsCounter {
 
     public BaseJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startIndexMap,
                     List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, int firstNumOfRows,
-                    String currTable, FilterPredicate currFilterPred, int currNumOfRows) {
+                    String currTable, FilterPredicate currFilterPred, int currNumOfRows, int qid) {
         leftTable = leftIterator;
         rightTable = rightIterator;
 
@@ -49,6 +50,8 @@ public abstract class BaseJoin implements RowsCounter {
         currTableFilterPredicate = currFilterPred;
         currTableNumOfRows = currNumOfRows;
 
+        queryId = qid;
+
         naturalJoinPairs = pairs;
         isCartesianJoin = pairs.isEmpty();
     }
@@ -56,7 +59,7 @@ public abstract class BaseJoin implements RowsCounter {
     public abstract void resetIterator() throws IOException;
 
     protected int translateColByTableName(String tableName, int col) {
-        return tableStartIndexMap.get(tableName) + database.getRelationByName(tableName).getNewByOldCol(col);
+        return tableStartIndexMap.get(tableName) + database.getRelationByName(tableName).getNewByOldCol(queryId, col);
     }
 
     protected abstract void toJoinTable() throws IOException;
@@ -113,7 +116,7 @@ public abstract class BaseJoin implements RowsCounter {
         NaturalJoinPredicate[] naturalJoinPredicates = new NaturalJoinPredicate[naturalJoinPairs.size()];
         for (int i = 0; i < naturalJoinPairs.size(); i++) {
             ParseElem leftElem = naturalJoinPairs.get(i)[0], rightElem = naturalJoinPairs.get(i)[1];
-            int leftCol = translateColByTableName(leftElem.table, leftElem.col), rightCol = database.getRelationByName(rightElem.table).getNewByOldCol(rightElem.col);
+            int leftCol = translateColByTableName(leftElem.table, leftElem.col), rightCol = database.getRelationByName(rightElem.table).getNewByOldCol(queryId, rightElem.col);
             naturalJoinPredicates[i] = new NaturalJoinPredicate(leftCol, rightCol);
         }
 
@@ -222,20 +225,20 @@ public abstract class BaseJoin implements RowsCounter {
             ((BaseJoin) leftTable).resetIterator();
         } else if (leftTable instanceof Filter) {
             leftTable = null;
-            leftTable = new Filter(new Scan(firstTableName, database.getRelationByName(firstTableName).getColsToKeep()), firstTableNumOfRows, firstTableFilterPredicate);
+            leftTable = new Filter(new Scan(firstTableName, database.getRelationByName(firstTableName).getColsToKeep(queryId)), firstTableNumOfRows, firstTableFilterPredicate);
         } else if (leftTable instanceof Scan) {
             leftTable = null;
-            leftTable = new Scan(firstTableName, database.getRelationByName(firstTableName).getColsToKeep());
+            leftTable = new Scan(firstTableName, database.getRelationByName(firstTableName).getColsToKeep(queryId));
         }
     }
 
     protected void resetRightIterator() throws IOException {
         if (rightTable instanceof Filter) {
             rightTable = null;
-            rightTable = new Filter(new Scan(currTableName, database.getRelationByName(currTableName).getColsToKeep()), currTableNumOfRows, currTableFilterPredicate);
+            rightTable = new Filter(new Scan(currTableName, database.getRelationByName(currTableName).getColsToKeep(queryId)), currTableNumOfRows, currTableFilterPredicate);
         } else if (rightTable instanceof Scan) {
             rightTable = null;
-            rightTable = new Scan(currTableName, database.getRelationByName(currTableName).getColsToKeep());
+            rightTable = new Scan(currTableName, database.getRelationByName(currTableName).getColsToKeep(queryId));
         }
     }
 

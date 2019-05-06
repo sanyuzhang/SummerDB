@@ -14,8 +14,8 @@ public class Sum extends BaseJoin {
 
     public Sum(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
                List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, int firstNumOfRows,
-               String currTable, FilterPredicate currFilterPred, int currNumOfRows, List<ParseElem> sumElms) throws IOException {
-        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, firstNumOfRows, currTable, currFilterPred, currNumOfRows);
+               String currTable, FilterPredicate currFilterPred, int currNumOfRows, int qid, List<ParseElem> sumElms) throws IOException {
+        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, firstNumOfRows, currTable, currFilterPred, currNumOfRows, qid);
         initSumTools(sumElms);
         toJoinTable();
     }

@@ -23,9 +23,9 @@ public class DiskJoin extends BaseJoin implements Iterator<int[]> {
 
     public DiskJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
                     String newTb, List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, int firstNumOfRows,
-                    String currTable, FilterPredicate currFilterPred, int currNumOfRows) throws IOException {
-        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, firstNumOfRows, currTable, currFilterPred, currNumOfRows);
-        filename = database.getRootPath() + newTb + SUFFIX;
+                    String currTable, FilterPredicate currFilterPred, int currNumOfRows, int qid) throws IOException {
+        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, firstNumOfRows, currTable, currFilterPred, currNumOfRows, qid);
+        filename = database.getRootPath() + newTb + qid + SUFFIX;
         dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
         toJoinTable();
     }

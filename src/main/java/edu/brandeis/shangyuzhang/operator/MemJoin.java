@@ -12,8 +12,8 @@ public class MemJoin extends BaseJoin implements Iterator<int[]> {
 
     public MemJoin(Iterator<int[]> leftIterator, Iterator<int[]> rightIterator, Map<String, Integer> startColMap,
                    List<ParseElem[]> pairs, String firstTable, FilterPredicate firstFilterPred, int firstNumOfRows,
-                   String currTable, FilterPredicate currFilterPred, int currNumOfRows) throws IOException {
-        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, firstNumOfRows, currTable, currFilterPred, currNumOfRows);
+                   String currTable, FilterPredicate currFilterPred, int currNumOfRows, int qid) throws IOException {
+        super(leftIterator, rightIterator, startColMap, pairs, firstTable, firstFilterPred, firstNumOfRows, currTable, currFilterPred, currNumOfRows, qid);
         currRow = 0;
         rows = new ArrayList();
         toJoinTable();
