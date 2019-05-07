@@ -86,16 +86,12 @@ public class DiskJoin extends BaseJoin implements Iterator<int[]> {
     }
 
     protected void addToResultRows(int[] leftRow, int[] rightRow) {
-        mergeRow(leftRow, rightRow);
-    }
-
-    private void mergeRow(int[] memRow, int[] diskRow) {
         try {
             if (numCols == 0)
-                numCols = memRow.length + diskRow.length;
+                numCols = leftRow.length + rightRow.length;
             for (int i = 0; i < numCols; i++) {
-                if (i < memRow.length) dos.writeInt(memRow[i]);
-                else dos.writeInt(diskRow[i - memRow.length]);
+                if (i < leftRow.length) dos.writeInt(leftRow[i]);
+                else dos.writeInt(rightRow[i - leftRow.length]);
             }
             numRows++;
         } catch (IOException e) {

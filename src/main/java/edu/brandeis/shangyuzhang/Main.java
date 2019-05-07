@@ -25,7 +25,7 @@ public class Main {
     private static final boolean isLocalTest = false;
 
     private static TestDataSet testDataSet;
-    private static final String TARGET_DATA_SET = Constants.LARGE;
+    private static final String TARGET_DATA_SET = Constants.XSMALL;
     private static final int NUM_OF_THREADS = 17;
 
     private static void load(String filePaths) {
