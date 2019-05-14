@@ -2,6 +2,7 @@ package edu.brandeis.shangyuzhang.util;
 
 public class Constants {
 
+    public static final String LARGE_TWO = "l2";
     public static final String LARGE = "l";
     public static final String MEDIUM = "m";
     public static final String SMALL = "s";

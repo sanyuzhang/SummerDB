@@ -110,7 +110,8 @@ public class Parser {
 
     public void optimize() {
         optimizer.initBestMap();
-        joinOrder = optimizer.computeBest(true);
+        joinOrder = optimizer.computeBest();
+//        System.out.println(joinOrder);
     }
 
     public void startEngine() throws IOException {
@@ -154,12 +155,10 @@ public class Parser {
                 }
                 if (isLastJoin) {
                     tableStartIndexMap.put(currTableName, joinedNumOfCols);
-                    sums = database.isLargeDataset() ?
-                            new MemSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, sumElems).getSums() :
-                            new DiskSum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, sumElems).getSums();
+                    sums = new Sum(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows, sumElems).getSums();
                     break;
                 } else {
-                    currIterator = database.isLargeDataset() ?
+                    currIterator = database.isDiskJoin() ?
                             new DiskJoin(resultIterator, currIterator, tableStartIndexMap, newTableName, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows) :
                             new MemJoin(resultIterator, currIterator, tableStartIndexMap, pairs, firstTableName, firstFilterPred, firstNumOfRows, currTableName, currFilterPred, currNumOfRows);
                 }

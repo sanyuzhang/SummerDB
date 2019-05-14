@@ -10,7 +10,8 @@ public class Database {
     private static String rootPath;
     private static Map<String, Relation> relations;
 
-    private boolean isLargeDataset;
+    private static boolean isDiskJoin;
+    private static boolean isReOptOnEqualCost;
 
     private Database() {
         relations = new HashMap<>();
@@ -51,12 +52,25 @@ public class Database {
         return relations.get(tableName).getNumRows();
     }
 
-    public boolean isLargeDataset() {
-        return isLargeDataset;
+    public boolean isDiskJoin() {
+        return isDiskJoin;
     }
 
-    public void setLargeDataset(boolean largeDataset) {
-        isLargeDataset = largeDataset;
+    public static void setDiskJoin(boolean diskJoin) {
+        isDiskJoin = diskJoin;
+    }
+
+    public static boolean isReOptOnEqualCost() {
+        return isReOptOnEqualCost;
+    }
+
+    public static void setReOptOnEqualCost(boolean reOpt) {
+        isReOptOnEqualCost = reOpt;
+    }
+
+    public static void setDataPath(String dataPath) {
+        setReOptOnEqualCost(!dataPath.contains("data/s/") && !dataPath.contains("data/xs/"));
+        setDiskJoin(dataPath.contains("data/l"));
     }
 
     public void resetOnNextQuery() {

@@ -20,14 +20,13 @@ public class Main {
 
     private static Database database = Database.getInstance();
 
-    private static final boolean isLocal = false;
+    private static final boolean isLocalTest = false;
 
     private static TestDataSet testDataSet;
-    private static final String TARGET_DATA_SET = Constants.XXSMALL;
+    private static final String TARGET_DATA_SET = Constants.XSMALL;
 
     private static void load(String filePaths) {
-        database.setLargeDataset(!filePaths.contains("data/x")
-                && !filePaths.contains("data/s") && !filePaths.contains("data/m"));
+        database.setDataPath(filePaths);
         String[] tables = filePaths.split(COMMA);
         for (String table : tables) {
             Loader loader = new Loader(table);
@@ -63,12 +62,11 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        if (isLocal) {
+        if (isLocalTest) {
             TestDataSetFactory factory = new TestDataSetFactory();
             testDataSet = factory.createDataSet(TARGET_DATA_SET);
             load(testDataSet.getFilePath());
             query();
-            cleanFile();
         } else {
             Scanner scanner = new Scanner(System.in);
             String inputPaths = scanner.nextLine();
@@ -88,6 +86,7 @@ public class Main {
             }
             scanner.close();
         }
+        cleanFile();
     }
 
 }

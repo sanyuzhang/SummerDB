@@ -7,6 +7,9 @@ public class TestDataSetFactory {
     public TestDataSet createDataSet(String config) {
         TestDataSet dataSet;
         switch (config) {
+            case LARGE_TWO:
+                dataSet = new LargeTwoDataSet();
+                break;
             case LARGE:
                 dataSet = new LargeDataSet();
                 break;
